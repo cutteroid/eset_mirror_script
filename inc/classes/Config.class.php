@@ -16,6 +16,7 @@ class Config {
 		'update_version7' => '1',
 		'update_version8' => '1',
 		'update_version9' => '1',
+		'update_version10' => '1',
 		'update_version_x32' => '1',
 		'update_version_x64' => '1',
 		'update_version_ess' => '1',

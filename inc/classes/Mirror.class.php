@@ -153,12 +153,20 @@ class Mirror {
 			// Parse files from .ver file
 			foreach ($matches[0] as $container) {
 				parse_str((str_replace("\r\n", "&", $container)), $output);
-				if ( empty($output['file']) or empty($output['size']) or empty($output['date']) or
-					(!empty($output['language']) and !in_array($output['language'], Config::get('update_version_lang'))) or
-					(Config::get('update_version_x32') != 1 and preg_match("/32|86/", $output['platform'])) or
-					(Config::get('update_version_x64') != 1 and preg_match("/64/", $output['platform'])) or
-					(Config::get('update_version_ess') != 1 and preg_match("/ess/", $output['type'])) ){
-					continue;
+				if (intval($version) != 10) {
+    				if ( empty($output['file']) or empty($output['size']) or empty($output['date']) or
+	    				(!empty($output['language']) and !in_array($output['language'], Config::get('update_version_lang'))) or
+		    			(Config::get('update_version_x32') != 1 and preg_match("/32|86/", $output['platform'])) or
+			    		(Config::get('update_version_x64') != 1 and preg_match("/64/", $output['platform'])) or
+				    	(Config::get('update_version_ess') != 1 and preg_match("/ess/", $output['type'])) ){
+					    continue;
+				    }
+				} else {
+				    if ( empty($output['file']) or empty($output['size']) or
+                    	(Config::get('update_version_x32') != 1 and preg_match("/32|86/", $output['platform'])) or
+                    	(Config::get('update_version_x64') != 1 and preg_match("/64/", $output['platform']))){
+                    	continue;
+				    }
 				}
 				$new_files[] = array($output['file'], $output['size']);
 				$total_size += $output['size'];
@@ -208,7 +216,7 @@ class Mirror {
 					}
 				}
 			}
-		
+
 			// Download files
 			$total_downloads = 0;
 			$average_speed = 0;
@@ -318,8 +326,7 @@ class Mirror {
 										$parsed_url = parse_url($mirror);
 										$total_downloads += $size;
 										Log::write_log(Language::t("From %s downloaded %s [%s] [%s/s]", $host, basename($file), Tools::bytesToSize1024($header['Content-Length']), Tools::bytesToSize1024($header['Content-Length']/(microtime(true) - $time))), 3, $version);
-									$total_downloads += $header['Content-Length'];
-										
+									    $total_downloads += $header['Content-Length'];
 									}
 									else list($mirror, $new_version) = Mirror::check_mirror($version);
 									if ($mirror == null) $test = false;
