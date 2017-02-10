@@ -1,0 +1,334 @@
+# Program language. Сan be en, ru, ukr
+# default_language = en
+
+# Default codepage for log/stdout. Default utf-8. Can be koi8-r, windows-1251, iso8859-5, cp866, mac-cyrillic, etc.
+# default_codepage = utf-8
+
+# Default timezone in format date_default_timezone_set (if this function is
+# supported by your PHP)
+# By default there is your current system zone.
+# default_timezone = Europe/Moscow
+
+
+# Script autoupdate module.
+# Recommended to turn it on to get actual updates.
+# Possible parameters:
+# 0 - Autoudates off
+# 1 - Notify about updates, but don't turn it on
+# 2 - Autoupdates on
+# Off by default!
+
+# self_update = 0
+
+
+# IP or DNS addresses of Eset update servers, default value is "update.eset.com"
+# You can use few servers, separated by comma.
+mirror = update.eset.com, um01.eset.com, um02.eset.com, um03.eset.com, um04.eset.com, um05.eset.com, um06.eset.com, um07.eset.com, um08.eset.com, um09.eset.com, um10.eset.com, um21.eset.com, um23.eset.com, um13.cn.eset.com, um15.cn.eset.com, um16.cn.eset.com, um10.za.eset.com, um01.ru.eset.com
+
+
+# Enabling updating of each version of Eset, by default everyone is "1"
+
+# Eset version 3
+# update_version3 = 1
+
+# Eset version 4
+# update_version4 = 1
+
+# Eset version 5
+# update_version5 = 1
+
+# Eset version 6
+# update_version6 = 1
+
+# Eset version 7
+# update_version7 = 1
+
+
+# Enabling updating of different modules for v3/v4/v5, by default everyone is "1"
+
+# Eset Version 32bit OS, "1" by default
+# update_version_x32 = 1
+
+# Eset Version 64bit OS, "1" by default
+# update_version_x64 = 1
+
+# Eset System Security (ESS), "1" by default
+# update_version_ess = 1
+
+
+# Select languages for v3/v4/v5/v6 you want to download, by default all the languages
+# will be downloaded. Use comma as separator. Full list of languages:
+# "bgr,chs,cht,csy,dan,deu,enu,esl,esn,eti,fin,fra,frc,hrv,hun,ita,kor,lth,nld,nor,plk,ptb,rom,rus,sky,slv,sve,tha,trk,ukr"
+
+update_version_lang = rus,enu,ukr
+
+
+# Filter strings separated by comma, which will be used to filter files/directories to exclude
+# them from download list.
+# 'rel-sta' by default
+
+# update_version_filter = rel-sta
+
+
+# Enabling internal key autosearch build-in module, default value is "1".
+# It is used for searching keys in auto-mode using patterns located in
+# "pattern" directory.
+
+# find_auto_enable = 1
+
+
+# Default value of pattern's name, disabled by default.
+# If disabled, will use all patterns in "pattern" dir.
+# If you want to use specified pattern to search keys (located in "patterns"
+# dir) you should write its file name without extension (.pattern).
+# Example: you want to use google to seach valid keys in internet.
+# For this you have to write "google" and have google.pattern in your
+# patterns' dir.
+
+# find_system =
+
+
+# Count searching validated keys.
+# By default "1".
+
+# count_find_keys = 1
+
+
+# Remove invalid keys from file with valid ones.
+# Turn this parameter off if you really know that your keys won't never be
+# expired.
+# On by default
+
+# remove_invalid_keys = 1
+
+
+# Default search query for search engines.
+# You can write few ones separating them with commas.
+# "QUERY" parameter in your link will be changed with this queries.
+
+# default_search_query = nod32+username+password
+
+
+# Default value of pattern's page index, default is "1"
+# It is used as variable in your "link" value and change it "findlevel" times.
+# Example: you want to use some page for searching valid keys.
+# Its link looks like:
+# page1 "http://somedomain.com/"
+# page2 "http://somedomain.com/?from=10"
+# page3 "http://somedomain.com/?from=20"
+# So, as you can see, "from" variable will change every page to 10.
+# So, your "link" in pattern will look like "http://somedomain.com/?from=#PAGE#"
+# and "pageindex" should be "10".
+# "Pageindex" is not used if "#PAGE#" variable didn't set in link.
+# If you set "pageindex" in your .pattern file it will have more priority than
+# this one.
+
+# default_pageindex = 1
+
+
+# Value which change how many times "#PAGE#" variable will transform to link.
+# If you set "page_qty" in your .pattern file it will have more priority than
+# this one.
+# Default value is "5".
+
+# default_page_qty = 5
+
+
+# AWK style template which determines eset keys on pages.
+# If you set "pattern" in your .pattern file it will have more priority than
+# this one.
+
+# default_pattern = ((EAV|TRIAL)-[0-9]{10}).+?([a-z0-9]{10})
+
+
+# Default value of recursion during parsing sites.
+# Strongly do not recommend to exceed this parameter more that 2, because
+# you will get much increase of your traffic and time for parsing.
+# Normally it's enough to get working keys with value 1-2.
+# If you set "recursion_level" in your .pattern file it will have more priority
+# than this one.
+# 2 by default
+
+# default_recursion_level = 2
+
+
+# Number of tries if downloading was unsuccessfully.
+# 5 by default.
+
+# default_errors_quantity = 5
+
+
+# Enabling ICQ informer which informs you about result of updating.
+# Default is "0".
+# Thank you very much for WebIcqLite class to Sergey Akudovich.
+
+# icq_informer_enable = 0
+
+
+# ICQ informer codepage. Default utf-8. Can be koi8-r, windows-1251, iso8859-5, cp866, mac-cyrillic, etc.
+# icq_informer_codepage = utf-8
+
+
+# Logging level of ICQ informer.
+# 0 - Disable
+# 1 - Errors and unsuccessful updates until N days (icq_informer_days)
+# 2 - Errors, successful updates and unsuccessful ones until N days
+# 3 - All updates and errors
+# Default value is "2".
+
+# icq_informer_level = 2
+
+
+# Quantity of days ICQ informer will inform you about unsuccessful updates.
+# Default value is "3" days.
+
+# icq_informer_days = 3
+
+
+# Additional options for ICQ informer.
+# You should set them up if you enable ICQ informer.
+
+# UIN number of ICQ informer.
+# icq_informer_login = UIN
+
+# UIN password of ICQ informer.
+# icq_informer_password = password
+
+# Destination UIN number which will receive messages.
+# icq_informer_destination = admin_UIN
+
+
+# Enabling PHP Mailer which will inform you about process of updating.
+# Disabled by default "0".
+# Thank you for PHP Mailer class to Endy Prevost.
+
+# phpmailer_enable = 0
+
+
+# PHP Mailer codepage. Default utf-8. Can be koi8-r, windows-1251, iso8859-5, cp866, mac-cyrillic, etc.
+# phpmailer_codepage = utf-8
+
+
+# Using external SMTP server instead of internal.
+# Disabled by default "0".
+
+# phpmailer_smtp = 1
+
+
+# Additional information about SMTP server you use.
+# You have to set these options up if you enable work through SMTP.
+
+# phpmailer_smtp_host = smtp.gmail.com
+# phpmailer_smtp_port = 587
+
+
+# Enable SMTP authorization.
+# Default value is "0".
+
+# phpmailer_smtp_auth = 1
+# phpmailer_secure = tls
+# phpmailer_smtp_login = login@gmail.com
+# phpmailer_smtp_password = password
+
+
+# Subject of email
+
+# phpmailer_subject = NOD32 script informer
+
+
+# Email which will identificate your script as sender.
+
+# phpmailer_sender = sender@gmail.com
+
+
+# Email of recipient which will receive mails.
+# It's neccessary to set up if you enable phpmailer.
+
+# phpmailer_recipient = receiver@gmail.com
+
+
+# Logging level of PHP Mailer.
+# 0 - Disable
+# 1 - Errors and unsuccessful updates until N days (phpmailer_days)
+# 2 - Errors, successful updates and unsuccessful ones until N days
+# 3 - All updates and errors
+# Default value is "1".
+
+# phpmailer_level = 1
+
+
+# Quantity of days PHP Mailer will inform you about unsuccessful updates.
+# Default value is "3" days.
+
+# phpmailer_days = 3
+
+
+# Path to your www directory where eset mirror files will be located.
+
+web_dir = www
+
+
+# Type of logging, default value is "1".
+# Can take the next parameters:
+# "0" - Disable logging;
+# "1" - Log to file;
+# "2" - Log to stdout;
+# "3" - Log to file and stdout.
+
+# log_type = 1
+
+
+# Level of logging, default value is "4".
+# Can take text parameters:
+# "0" - System messages and messages about successful updates only;
+# "1" - System messages, errors and messages about successful updates;
+# "2" - System messages, errors, warnings and messages about successful updates;
+# "3" - System messages, errors, warnings and messages about process of updating;
+# "4" - System messages, errors, warnings and messages about process of updating 
+#       and searching.
+
+# log_level = 4
+
+
+# Path to your log directory, default is "log".
+
+# log_dir = log
+
+
+# Enabling rotation of log file, default value is "1".
+
+# log_rotate_enable = 1
+
+
+# Default size of log file which will be rotated, default value is "100K".
+# You may use postfixes: "B" (bytes), "K" (Kbytes), "M" (MBytes), "G" (GBytes)
+
+# log_rotate_size = 100K
+
+
+# How many files will be rotated, default value is "5".
+# log_rotate_qty = 5
+
+
+# Generate index.html file and put it into the root of www directory.
+# It will have: correct database version, size and date of successful update. Default 0.
+# generate_index_html = 0
+
+
+# Generate only table for injection this in other html page. Defaul 0.
+# generate_only_table = 0
+
+
+# Show used login and password in generated html. Default 0.
+# show_login_password = 0
+
+
+# HTML codepage. Default utf-8. Can be koi8-r, windows-1251, iso8859-5, cp866, mac-cyrillic, etc.
+# html_codepage = utf-8
+
+
+# Enabling debug mode which dump all downloaded pages into text files.
+# It's very useful for creating and debuging new pattern files.
+# Default is "0".
+
+# debug_html = 0
