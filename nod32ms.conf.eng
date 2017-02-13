@@ -43,6 +43,15 @@ mirror = update.eset.com, um01.eset.com, um02.eset.com, um03.eset.com, um04.eset
 # Eset version 7
 # update_version7 = 1
 
+# Eset version 8
+# update_version8 = 1
+
+# Eset version 9
+# update_version9 = 1
+
+# Eset version 10
+# update_version10 = 1
+
 
 # Enabling updating of different modules for v3/v4/v5, by default everyone is "1"
 
