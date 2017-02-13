@@ -21,7 +21,7 @@ class Nod32ms {
 		$timestamps = array();
 		if(file_exists($fn)) {
 			$handle = file_get_contents($fn);
-			$content = Parser::parse_line($handle, false, "/(.:.+)\n/");
+			$content = Parser::parse_line($handle, false, "/(.+:.+)\n/");
 			if(isset($content) && count($content)) {
 				foreach($content as $value) {
 					$result = explode(":", $value);
@@ -85,7 +85,7 @@ class Nod32ms {
 		$sizes = array();
 		if(file_exists($fn)) {
 			$handle = file_get_contents($fn);
-			$content = Parser::parse_line($handle, false, "/(.:.+)\n/");
+			$content = Parser::parse_line($handle, false, "/(.+:.+)\n/");
 			if(isset($content) && count($content)) {
 				foreach($content as $value) {
 					$result = explode(":", $value);
