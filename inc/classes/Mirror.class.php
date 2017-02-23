@@ -138,7 +138,7 @@ class Mirror {
 		return $max;
 	}
 
-	static public function download_signature($version, $mirror, $pair_key, $version = null) {
+	static public function download_signature($version, $mirror, $pair_key) {
 		global $DIRECTORIES;
 		$dir = Config::get('web_dir');
 		$cur_update_ver = Tools::ds($dir, $DIRECTORIES[$version], 'update.ver');
