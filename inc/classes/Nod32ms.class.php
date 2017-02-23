@@ -457,7 +457,7 @@ class Nod32ms {
 				$cur_update_ver = Tools::ds(Config::get('web_dir'), $DIRECTORIES[$version], 'update.ver');
 				$tmp_update_ver = Tools::ds(Config::get('web_dir'), TMP_PATH, $DIRECTORIES[$version], 'update.ver');
 				$timestamp = $this->check_time_stamp($version);
-				list($size, $downloads, $speed) = Mirror::download_signature($version, $mirror['mirror'], $key, $version);
+				list($size, $downloads, $speed) = Mirror::download_signature($version, $mirror['mirror'], $key);
 				$this->set_datebase_size($version, $size);
 				if (is_null($downloads)) {
 					Log::informer(Language::t("Your database has not been updated!"), $version, 1);
