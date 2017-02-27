@@ -1,5 +1,7 @@
 #!/usr/bin/env php
 <?php
+error_reporting(E_ERROR);
+ini_set('display_errors', 0);
 
 require_once "inc/init.php";
 
