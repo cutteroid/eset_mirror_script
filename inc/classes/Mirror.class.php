@@ -314,6 +314,7 @@ class Mirror {
       }
      } else {
       foreach ($download_files as $file) {
+       var_dump($file);
        if ($mirror != null){
         $dest = Tools::ds($dir, $file);
         $test = true;
@@ -327,8 +328,9 @@ class Mirror {
           $total_downloads += $size;
           Log::write_log(Language::t("From %s downloaded %s [%s] [%s/s]", $host, basename($file), Tools::bytesToSize1024($header['Content-Length']), Tools::bytesToSize1024($header['Content-Length']/(microtime(true) - $time))), 3, $version);
              $total_downloads += $header['Content-Length'];
+         } else {
+          list($mirror, $new_version) = Mirror::check_mirror($version);
          }
-         else list($mirror, $new_version) = Mirror::check_mirror($version);
          if ($mirror == null) $test = false;
         }
        } else {
