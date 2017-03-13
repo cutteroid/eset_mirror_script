@@ -228,7 +228,7 @@ class Mirror {
     if ($mirror != null) {
      if (function_exists('curl_multi_init')){
       $test = false;
-      $treads = 25;
+      $treads = 10;
       $file = array();
       $treads = (count($download_files) < $treads) ? count($download_files) : $treads;
       $master = curl_multi_init();

@@ -422,20 +422,20 @@ class Nod32ms {
       Log::informer(Language::t("Your database is relevant %s", $old_version), $version, 2);
      } else {
       Log::write_log( Language::t("The latest database %s was found on %s", $new_version, $mirror), 2, $version);
-      $mirrors[$version] = array('mirror' => $mirror, 'old' => $old_version, 'new' => $new_version);
-      if (empty($GLOBALS['TESTKEY_REAL_PATH_NOD'])) {
-       $content = @file_get_contents($tmp_update_ver);
-       preg_match('#/[\w-]+/\w+/eav\w+\.nup#i', $content, $matches);
-       if (!empty($matches)){
-        $GLOBALS['TESTKEY_REAL_PATH_NOD'] = trim($matches[0]);
-       }
+     }
+     $mirrors[$version] = array('mirror' => $mirror, 'old' => $old_version, 'new' => $new_version);
+     if (empty($GLOBALS['TESTKEY_REAL_PATH_NOD'])) {
+      $content = @file_get_contents($tmp_update_ver);
+      preg_match('#/[\w-]+/\w+/eav\w+\.nup#i', $content, $matches);
+      if (!empty($matches)){
+       $GLOBALS['TESTKEY_REAL_PATH_NOD'] = trim($matches[0]);
       }
-      if (empty($GLOBALS['TESTKEY_REAL_PATH_ESS'])) {
-       $content = @file_get_contents($tmp_update_ver);
-       preg_match('#/[\w-]+/\w+/ess\w+\.nup#i', $content, $matches);
-       if (!empty($matches)){
-        $GLOBALS['TESTKEY_REAL_PATH_ESS'] = trim($matches[0]);
-       }
+     }
+     if (empty($GLOBALS['TESTKEY_REAL_PATH_ESS'])) {
+      $content = @file_get_contents($tmp_update_ver);
+      preg_match('#/[\w-]+/\w+/ess\w+\.nup#i', $content, $matches);
+      if (!empty($matches)){
+       $GLOBALS['TESTKEY_REAL_PATH_ESS'] = trim($matches[0]);
       }
      }
     } else {
