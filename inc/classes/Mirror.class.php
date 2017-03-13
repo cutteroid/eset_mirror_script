@@ -228,7 +228,7 @@ class Mirror {
     if ($mirror != null) {
      if (function_exists('curl_multi_init')){
       $test = false;
-      $treads = 10;
+      $treads = 1;
       $file = array();
       $treads = (count($download_files) < $treads) ? count($download_files) : $treads;
       $master = curl_multi_init();
@@ -314,7 +314,6 @@ class Mirror {
       }
      } else {
       foreach ($download_files as $file) {
-       var_dump($file);
        if ($mirror != null){
         $dest = Tools::ds($dir, $file);
         $test = true;
