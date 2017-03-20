@@ -321,7 +321,7 @@ web_dir = www
 
 # Generate index.html file and put it into the root of www directory.
 # It will have: correct database version, size and date of successful update. Default 0.
-# generate_index_html = 0
+# generate_html = 0
 
 
 # Generate only table for injection this in other html page. Defaul 0.
