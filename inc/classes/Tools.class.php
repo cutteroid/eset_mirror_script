@@ -27,7 +27,7 @@ class Tools {
   switch(PHP_OS) {
    case "Darwin":
    case "Linux":
-   case "FreeBSD": return ".tar.gz";
+   case "FreeBSD":
    case "OpenBSD": return ".tar.gz";
    case "WINNT": return ".zip";
   }    
@@ -35,10 +35,10 @@ class Tools {
 
  static public function archive_file($source) {
   chdir(Config::get('log_dir'));
-  $a = new PharData("$source.1.tar");
+  $a = new PharData("$source.tar");
   $a->addFile($source);
   $a->compress(Phar::GZ);
-  unlink($source,"$source.1.tar");
+  unlink($source,"$source.tar");
   chdir("../");
  }
 
