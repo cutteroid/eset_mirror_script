@@ -31,11 +31,11 @@ class Tools {
   throw  new Exception("Your OS not supported");
  }    
 
- static public function archive_file($source, $dest) {
-  $fp = gzopen("$dest.gz", 'w9');
-  gzwrite($fp, file_get_contents("$source"));
+ static public function archive_file() {
+  $fp = gzopen(Config::get("log_dir").LOG_FILE.".1.gz", 'w9');
+  gzwrite($fp, file_get_contents(Config::get("log_dir").LOG_FILE));
   gzclose($fp);
-  unlink("$source");
+  unlink(Config::get("log_dir").LOG_FILE);
  }
 
  static public function extract_file($source, $dest) {
