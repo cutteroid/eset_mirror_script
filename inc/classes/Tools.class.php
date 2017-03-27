@@ -34,7 +34,7 @@ class Tools {
  }    
 
  static public function archive_file($source, $dest) {
-  cdir(Config::get('log_dir'));
+  chdir(Config::get('log_dir'));
   $a = new PharData($dest);
   $a->addFile($source);
   $a->compress(Phar::GZ);
