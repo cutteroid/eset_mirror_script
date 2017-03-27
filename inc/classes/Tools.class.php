@@ -34,7 +34,7 @@ class Tools {
  }    
 
  static public function archive_file($dir, $source, $dest) {
-  $a = new PharData("$dir/$dest");
+  $a = new PharData($dest);
   $a->addFile($source);
   $a->compress(Phar::GZ);
  }
