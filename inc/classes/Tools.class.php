@@ -3,9 +3,6 @@
 class Tools {
 
  static public function download_file($source, $dest, $buffer = 1024) {
-  $parsed_url = parse_url($source);
-  $host = $parsed_url['host'];
-  $port = isset($parsed_url['port']) ? $parsed_url['port'] : 80;
   ini_set('default_socket_timeout', CONNECTTIMEOUT);
   $header = @get_headers($source, 1);
   ini_restore('default_socket_timeout');
@@ -30,7 +27,8 @@ class Tools {
    case "FreeBSD":
    case "OpenBSD": return ".tar.gz";
    case "WINNT": return ".zip";
-  }    
+  }
+  throw  new Exception("Your OS not supported");
  }    
 
  static public function archive_file($source) {
@@ -64,7 +62,7 @@ class Tools {
   $unit = array('Bytes', 'KBytes', 'MBytes', 'GBytes', 'TBytes', 'PBytes', 'EBytes');
   return @round(
    $bytes / pow(1024, ($i = floor(log($bytes, 1024)))), $precision
-  ).' '.$unit[$i];
+  ).' '.$unit[intval($i)];
  }
  
  static public function secondsToHumanReadable($secs) {
