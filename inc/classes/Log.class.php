@@ -2,8 +2,6 @@
 
 class Log {
 	static private $log = array();
-	static private $icq_log = "";
-	static private $mailer_log = "";
 
     static public function destruct() {}
 
@@ -18,8 +16,8 @@ class Log {
 		clearstatcache();
 	}
 
-	static public function informer($str, $ver, $level) {
-		Log::write_log($str, 0, $ver);
+	static public function informer($str, $ver, $level = 0) {
+		Log::write_log($str, $level, $ver);
 	}
 
     static public function write_log($text, $level, $version = null, $ignore_rotate = false) {
