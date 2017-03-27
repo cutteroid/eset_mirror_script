@@ -38,7 +38,8 @@ class Tools {
   $a = new PharData($dest);
   $a->addFile($source);
   $a->compress(Phar::GZ);
-  unlink($source);
+  unlink($source,$dest);
+  chdir("../");
  }
 
  static public function extract_file($source, $dest) {
