@@ -32,10 +32,10 @@ class Tools {
  }    
 
  static public function archive_file() {
-  $fp = gzopen(Config::get("log_dir").LOG_FILE.".1.gz", 'w9');
-  gzwrite($fp, file_get_contents(Config::get("log_dir").LOG_FILE));
+  $fp = gzopen(Config::get("log_dir")."/".LOG_FILE.".1.gz", 'w9');
+  gzwrite($fp, file_get_contents(Config::get("log_dir")."/".LOG_FILE));
   gzclose($fp);
-  unlink(Config::get("log_dir").LOG_FILE);
+  unlink(Config::get("log_dir")."/".LOG_FILE);
  }
 
  static public function extract_file($source, $dest) {
