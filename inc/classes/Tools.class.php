@@ -34,13 +34,9 @@ class Tools {
  }    
 
  static public function archive_file($dir, $source, $dest) {
-  switch(PHP_OS) {
-   case "Darwin":
-   case "Linux": 
-   case "FreeBSD": system(sprintf("tar -czf %s -C%s %s", $dest.self::get_archive_extension(), $dir, $source)); break;
-   case "OpenBSD": system(sprintf("tar -czf %s -C%s %s", $dest.self::get_archive_extension(), $dir, $source)); break;
-   case "WINNT": shell_exec(sprintf("%s7za.exe a %s %s", TOOLS, $dest.self::get_archive_extension(), self::ds($dir, $source))); break;
-  }    
+  $a = new PharData("$dir/$dest");
+  $a->addFile($source);
+  $a->compress();
  }
 
  static public function extract_file($source, $dest) {
