@@ -25,22 +25,17 @@ class Tools {
    case "Darwin":
    case "Linux":
    case "FreeBSD":
-   case "OpenBSD": return ".tar.gz";
+   case "OpenBSD": return ".gz";
    case "WINNT": return ".zip";
   }
   throw  new Exception("Your OS not supported");
  }    
 
- static public function archive_file($source) {
-  chdir(Config::get('log_dir'));
-  $a = new PharData("$source.tar");
-  $a->addFile($source);
-  $a->compress(Phar::GZ);
-  rename("$source.tar.gz", "$source.1.tar.gz");
-  unlink("$source");
-  unlink("$source.tar.gz");
-  unlink("$source.tar");
-  chdir("../");
+ static public function archive_file($source, $dest) {
+     $fp = gzopen("$dest.1.gz", 'w9'); // w == write, 9 == highest compression
+     gzwrite($fp, file_get_contents("$source"));
+     gzclose($fp);
+     unlink("$source");
  }
 
  static public function extract_file($source, $dest) {
