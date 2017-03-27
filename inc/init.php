@@ -4,26 +4,26 @@ ini_set('memory_limit', '16M');
 chdir(substr(dirname(__FILE__),0,-3));
 
 $DIRECTORIES = array(
-    3 => 'eset_upd',
-    4 => 'eset_upd/v4',
-    5 => 'eset_upd/v5',
-    6 => 'eset_upd/v6',
-    7 => 'eset_upd/v7',
-    8 => 'eset_upd/v8',
-    9 => 'eset_upd/v9',
-    10 => 'eset_upd/v10/dll'
+ 3 => 'eset_upd',
+ 4 => 'eset_upd/v4',
+ 5 => 'eset_upd/v5',
+ 6 => 'eset_upd/v6',
+ 7 => 'eset_upd/v7',
+ 8 => 'eset_upd/v8',
+ 9 => 'eset_upd/v9',
+ 10 => 'eset_upd/v10',
 );
 $SELFUPDATE_POSTFIX = array(
-    "changelog.rus.1251",
-    "changelog.rus.koi8-r",
-    "changelog.eng",
-    "nod32ms.conf.rus",
-    "nod32ms.conf.eng"
+ "changelog.rus.1251",
+ "changelog.rus.koi8-r",
+ "changelog.eng",
+ "nod32ms.conf.rus",
+ "nod32ms.conf.eng",
 );
 
 define('DS', DIRECTORY_SEPARATOR);
 
-define('VERSION', '1.0.191014 [Freedom for Ukraine]');
+define('VERSION', '1.0.191014 [Freedom for Ukraine][Moded by harmless]');
 define('SELF', substr(dirname(__FILE__),0,-3)); 
 define('INC', substr(dirname(__FILE__),0,-3)."inc".DS);
 define('CLASSES', substr(dirname(__FILE__),0,-3)."inc".DS."classes".DS);
@@ -44,5 +44,3 @@ define('SELFUPDATE_PORT', "80");
 define('SELFUPDATE_FILE', "files.md5");
 define('SELFUPDATE_NEW_VERSION', "version.txt");
 define("CONNECTTIMEOUT", 5); # Seconds
-
-?>
