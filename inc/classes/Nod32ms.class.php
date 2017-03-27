@@ -179,8 +179,8 @@ class Nod32ms {
   static $found_key = false;
   $options = array(
     'http'=>array(
-   'method'=>"GET", 
-   'header'=>"User-Agent: Mozilla/5.0 (Windows; U; Windows NT 6.1; rv:2.2) Gecko/20110201\r\n"
+     'method'=>"GET",
+     'header'=>"User-Agent: Mozilla/5.0 (Windows; U; Windows NT 6.1; rv:2.2) Gecko/20110201\r\n"
     )
   );
   $context = stream_context_create($options);
