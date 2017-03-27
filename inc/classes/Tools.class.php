@@ -33,11 +33,13 @@ class Tools {
 
  static public function archive_file($source) {
   chdir(Config::get('log_dir'));
-  $a = new PharData("$source.1.tar");
+  $a = new PharData("$source.tar");
   $a->addFile($source);
   $a->compress(Phar::GZ);
-  unlink($source);
-  unlink("$source.1.tar");
+  rename("$source.tar.gz", "$source.1.tar.gz");
+  unlink("$source");
+  unlink("$source.tar.gz");
+  unlink("$source.tar");
   chdir("../");
  }
 
