@@ -32,7 +32,7 @@ class Tools {
  }    
 
  static public function archive_file($source, $dest) {
-  $fp = gzopen("$dest.1.gz", 'w9');
+  $fp = gzopen("$dest.gz", 'w9');
   gzwrite($fp, file_get_contents("$source"));
   gzclose($fp);
   unlink("$source");
