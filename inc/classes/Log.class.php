@@ -90,7 +90,7 @@ class Log {
 						@rename($fn . strval($i-1) . tools::get_archive_extension(), $fn . strval($i) . tools::get_archive_extension());
 					}
 					@unlink($fn . "1" . tools::get_archive_extension());
-					tools::archive_file(Config::get('log_dir'), LOG_FILE, $fn . "1");
+					tools::archive_file(LOG_FILE, $fn . "1");
 					@unlink($fn);
 					Log::write_log(Language::t("Log file was cutted due rotation..."), 0, null, true);
 					array_pop(self::$log);
