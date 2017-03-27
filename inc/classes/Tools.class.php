@@ -32,10 +32,10 @@ class Tools {
  }    
 
  static public function archive_file($source, $dest) {
-     $fp = gzopen("$dest.1.gz", 'w9'); // w == write, 9 == highest compression
-     gzwrite($fp, file_get_contents("$source"));
-     gzclose($fp);
-     unlink("$source");
+  $fp = gzopen("$dest.1.gz", 'w9');
+  gzwrite($fp, file_get_contents("$source"));
+  gzclose($fp);
+  unlink("$source");
  }
 
  static public function extract_file($source, $dest) {
