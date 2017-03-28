@@ -32,6 +32,19 @@ class Config {
   'default_pattern' => "((EAV|TRIAL)-[0-9]{10}).+?([a-z0-9]{10})",
   'default_recursion_level' => '2',
   'default_errors_quantity' => '5',
+  'phpmailer_enable' => '0',
+  'phpmailer_codepage' => 'UTF-8',
+  'phpmailer_smtp' => '0',
+  'phpmailer_smtp_host' => null,
+  'phpmailer_smtp_port' => '25',
+  'phpmailer_smtp_auth' => '0',
+  'phpmailer_smtp_login' => null,
+  'phpmailer_smtp_password' => null,
+  'phpmailer_subject' => null,
+  'phpmailer_sender' => null,
+  'phpmailer_recipient' => null,
+  'phpmailer_level' => '1',
+  'phpmailer_days' => '3',
   'log_type' => '1',
   'log_level' => '4',
   'log_dir' => 'log',
@@ -193,6 +206,23 @@ class Config {
   @mkdir(self::$CONF['web_dir'],0755,true);
   @mkdir(Tools::ds(self::$CONF['web_dir'],TMP_PATH,0755,true));
   if (self::$CONF['debug_html'] == 1) @mkdir(Tools::ds(self::$CONF['log_dir'],DEBUG_DIR,0755,true));
+
+  if (self::$CONF['phpmailer_enable'] == 1) {
+   if ( empty(self::$CONF['phpmailer_sender']) || strpos(self::$CONF['phpmailer_sender'],"@") === FALSE ||
+   empty(self::$CONF['phpmailer_recipient']) || strpos(self::$CONF['phpmailer_recipient'],"@") === FALSE) {
+    return "You didn't set up email address of sender/recipient or it is wrong.Please, check your config file.";
+   }
+   if (self::$CONF['phpmailer_smtp'] == 1) {
+    if (empty(self::$CONF['phpmailer_smtp_host']) || empty(self::$CONF['phpmailer_smtp_port'])) {
+     return "Please, check SMTP host/port for using SMTP server in your config file.Or disable SMTP server if you don't wanna use it.";
+    }
+    if (self::$CONF['phpmailer_smtp_auth'] == 1) {
+     if (empty(self::$CONF['phpmailer_smtp_login']) || empty(self::$CONF['phpmailer_smtp_password'])) {
+      return "Please, check login/password for using SMTP authorization.";
+     }
+    }
+   }
+  }
 
   if (intval(self::$CONF['default_errors_quantity']) <= 0) {
    self::$CONF['default_errors_quantity'] = 1;
