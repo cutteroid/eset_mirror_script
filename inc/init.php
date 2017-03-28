@@ -15,8 +15,7 @@ $DIRECTORIES = array(
 );
 
 $SELFUPDATE_POSTFIX = array(
- "changelog.rus.1251",
- "changelog.rus.koi8-r",
+ "changelog.rus",
  "changelog.eng",
  "nod32ms.conf.rus",
  "nod32ms.conf.eng",
