@@ -4,7 +4,7 @@ ini_set('memory_limit', '16M');
 chdir(substr(dirname(__FILE__),0,-3));
 
 $DIRECTORIES = array(
- 3 => 'eset_upd/v3',
+ 3 => 'eset_upd',
  4 => 'eset_upd/v4',
  5 => 'eset_upd/v5',
  6 => 'eset_upd/v6',
