@@ -21,21 +21,15 @@ class Tools {
  }
  
  static public function get_archive_extension() {
-  switch(PHP_OS) {
-   case "Darwin":
-   case "Linux":
-   case "FreeBSD":
-   case "OpenBSD": return ".gz";
-   case "WINNT": return ".zip";
-  }
-  throw  new Exception("Your OS not supported");
+  return ".gz";
  }    
 
  static public function archive_file() {
-  $fp = gzopen(Config::get("log_dir")."/".LOG_FILE.".1.gz", 'w9');
-  gzwrite($fp, file_get_contents(Config::get("log_dir")."/".LOG_FILE));
+  $log = self::ds(Config::get("log_dir"),LOG_FILE);
+  $fp = gzopen($log.".1.gz", 'w9');
+  gzwrite($fp, file_get_contents($log));
   gzclose($fp);
-  unlink(Config::get("log_dir")."/".LOG_FILE);
+  unlink($log);
  }
 
  static public function extract_file($source, $dest) {
