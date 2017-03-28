@@ -8,7 +8,7 @@ class SelfUpdate {
  }
 
  static private function get_hashes_from_server() {
-  $content = file_get_contents(sprintf("%s/%s", SELFUPDATE_SERVER, SELFUPDATE_FILE));
+  $content = file_get_contents(sprintf("http://%s:%s/%s/%s", SELFUPDATE_SERVER, SELFUPDATE_PORT, SELFUPDATE_DIR, SELFUPDATE_FILE));
   $arr = array();
   if (preg_match_all( "/(.+)=(.+)=(.+)/" , $content, $result, PREG_OFFSET_CAPTURE)) {
    foreach ($result[1] as $num => $res) {
@@ -36,7 +36,7 @@ class SelfUpdate {
  }
 
  static public function get_version_on_server() {
-  return trim(file_get_contents(sprintf("%s/%s", SELFUPDATE_SERVER, SELFUPDATE_NEW_VERSION)));
+  return trim(file_get_contents(sprintf("http://%s:%s/%s/%s", SELFUPDATE_SERVER, SELFUPDATE_PORT, SELFUPDATE_DIR, SELFUPDATE_NEW_VERSION)));
  }
 
  static public function start_to_update() {
@@ -51,7 +51,7 @@ class SelfUpdate {
   }
   global $SELFUPDATE_POSTFIX;
   foreach ($SELFUPDATE_POSTFIX as $file) {
-   Tools::download_file(sprintf("%s/%s", SELFUPDATE_SERVER, $file), str_replace("/",DS,$file));
+   Tools::download_file(sprintf("http://%s:%s/%s/%s", SELFUPDATE_SERVER, SELFUPDATE_PORT, SELFUPDATE_DIR, $file), str_replace("/",DS,$file));
   }
  }
 
