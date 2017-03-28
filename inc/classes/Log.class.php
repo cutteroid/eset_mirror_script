@@ -31,10 +31,10 @@ class Log {
 					Log::write_log(Language::t("Log file was cutted due rotation..."), 0, null, true);
 					array_pop(self::$log);
 					for($i=Config::get('log_rotate_qty'); $i>1; $i--) {
-						@unlink($fn . strval($i) . tools::get_archive_extension());
-						@rename($fn . strval($i-1) . tools::get_archive_extension(), $fn . strval($i) . tools::get_archive_extension());
+						@unlink($fn . tools::get_archive_extension() . strval($i));
+						@rename($fn . tools::get_archive_extension(). strval($i-1), $fn . tools::get_archive_extension(). strval($i));
 					}
-					@unlink($fn . "1" . tools::get_archive_extension());
+					@unlink($fn . tools::get_archive_extension() . "1");
 					tools::archive_file();
 					@unlink($fn);
 					Log::write_log(Language::t("Log file was cutted due rotation..."), 0, null, true);
