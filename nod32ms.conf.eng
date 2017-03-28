@@ -167,6 +167,71 @@ update_version_lang = rus,enu,ukr
 # default_errors_quantity = 5
 
 
+# Enabling PHP Mailer which will inform you about process of updating.
+# Disabled by default "0".
+# Thank you for PHP Mailer class to Endy Prevost.
+
+# phpmailer_enable = 0
+
+
+# PHP Mailer codepage. Default utf-8. Can be koi8-r, windows-1251, iso8859-5, cp866, mac-cyrillic, etc.
+# phpmailer_codepage = utf-8
+
+
+# Using external SMTP server instead of internal.
+# Disabled by default "0".
+
+# phpmailer_smtp = 1
+
+
+# Additional information about SMTP server you use.
+# You have to set these options up if you enable work through SMTP.
+
+# phpmailer_smtp_host = smtp.gmail.com
+# phpmailer_smtp_port = 587
+
+
+# Enable SMTP authorization.
+# Default value is "0".
+
+# phpmailer_smtp_auth = 1
+# phpmailer_secure = tls
+# phpmailer_smtp_login = login@gmail.com
+# phpmailer_smtp_password = password
+
+
+# Subject of email
+
+# phpmailer_subject = NOD32 script informer
+
+
+# Email which will identificate your script as sender.
+
+# phpmailer_sender = sender@gmail.com
+
+
+# Email of recipient which will receive mails.
+# It's neccessary to set up if you enable phpmailer.
+
+# phpmailer_recipient = receiver@gmail.com
+
+
+# Logging level of PHP Mailer.
+# 0 - Disable
+# 1 - Errors and unsuccessful updates until N days (phpmailer_days)
+# 2 - Errors, successful updates and unsuccessful ones until N days
+# 3 - All updates and errors
+# Default value is "1".
+
+# phpmailer_level = 1
+
+
+# Quantity of days PHP Mailer will inform you about unsuccessful updates.
+# Default value is "3" days.
+
+# phpmailer_days = 3
+
+
 # Path to your www directory where eset mirror files will be located.
 
 web_dir = www
