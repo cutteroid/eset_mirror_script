@@ -3,7 +3,39 @@
 class Log {
  static private $log = array();
 
- static public function destruct() {}
+ static public function destruct() {
+  if (!empty(self::$mailer_log) && Config::get('phpmailer_enable') == '1') {
+   $mailer = new PHPMailer();
+   if (Config::get('phpmailer_smtp') == '1') {
+    $mailer->Host = Config::get('phpmailer_smtp_host');
+    $mailer->Port = Config::get('phpmailer_smtp_port');
+    $mailer->CharSet = Config::get('phpmailer_codepage');
+    $mailer->Mailer = "smtp";
+    if (Config::get('phpmailer_smtp_auth') == '1') {
+     $mailer->SMTPAuth = true;
+     $mailer->SMTPSecure = Config::get('phpmailer_secure');
+     $mailer->Username = Config::get('phpmailer_smtp_login');
+     $mailer->Password = Config::get('phpmailer_smtp_password');
+    } else {
+     $mailer->SMTPAuth = false;
+    }
+   }
+   $mailer->Priority = 3;
+   $mailer->Subject = Tools::conv(Config::get('phpmailer_subject'), Config::get('phpmailer_codepage'));
+   if (Config::get('phpmailer_level') == '3'){
+    self::$mailer_log = implode("\r\n", self::$log);
+   }
+   $mailer->Body = Tools::conv(self::$mailer_log, Config::get('phpmailer_codepage'));
+   $mailer->SetFrom(Config::get('phpmailer_sender'), "NOD32 mirror script");
+   $mailer->AddAddress(Config::get('phpmailer_recipient'), "Admin");
+   $mail->SMTPDebug = 1;
+   if (!$mailer->Send()) {
+    Log::write_log($mailer->ErrorInfo, 0);
+   }
+   $mailer->ClearAddresses();
+   $mailer->ClearAttachments();
+  }
+ }
 
  static public function write_to_file($filename, $text, $is_log_dir = false) {
   $file_name = $is_log_dir ? $filename : Tools::ds(Config::get('log_dir'), $filename);
@@ -18,6 +50,9 @@ class Log {
 
  static public function informer($str, $ver, $level = 0) {
   Log::write_log($str, $level, $ver);
+  if (Config::get('phpmailer_level') >= $level) {
+   self::$mailer_log .= sprintf("[%s] [%s] %s%s", date("Y-m-d"), date("H:i:s"), ($ver ? '[ver. ' . strval($ver) . '] ' : ''), $str) . chr(10);
+  }
  }
 
  static public function write_log($text, $level, $version = null, $ignore_rotate = false) {
