@@ -23,7 +23,7 @@ $SELFUPDATE_POSTFIX = array(
 );
 
 define('DS', DIRECTORY_SEPARATOR);
-define('VERSION', '1.0.191014 [Freedom for Ukraine][Moded by harmless]');
+define('VERSION', '1.0.20190328 [Freedom for Ukraine][Moded by harmless]');
 define('SELF', substr(dirname(__FILE__),0,-3)); 
 define('INC', substr(dirname(__FILE__),0,-3)."inc".DS);
 define('CLASSES', substr(dirname(__FILE__),0,-3)."inc".DS."classes".DS);
@@ -39,8 +39,5 @@ define('SUCCESSFUL_TIMESTAMP', 'nod_lastupdate');
 define('LINKTEST', 'nod_linktest');
 define('DATABASES_SIZE', 'nod_databases_size');
 define('TMP_PATH', 'tmp');
-define('SELFUPDATE_SERVER', "162.220.26.108/nod32ms");
-define('SELFUPDATE_PORT', "80");
-define('SELFUPDATE_FILE', "files.md5");
-define('SELFUPDATE_NEW_VERSION', "version.txt");
+define('SELFUPDATE_SERVER', "https://github.com/zxzharmlesszxz/eset_mirror_script/archive/1.0.20190328.zip");
 define("CONNECTTIMEOUT", 5); # Seconds
