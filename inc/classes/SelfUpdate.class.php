@@ -8,7 +8,7 @@ class SelfUpdate {
  }
 
  static private function get_hashes_from_server() {
-  $content = file_get_contents(sprintf("http://%s:%s/%s", SELFUPDATE_SERVER, SELFUPDATE_PORT, SELFUPDATE_FILE));
+  $content = file_get_contents(sprintf("/%s", SELFUPDATE_SERVER, SELFUPDATE_FILE));
   $arr = array();
   if (preg_match_all( "/(.+)=(.+)=(.+)/" , $content, $result, PREG_OFFSET_CAPTURE)) {
    foreach ($result[1] as $num => $res) {
@@ -36,13 +36,13 @@ class SelfUpdate {
  }
 
  static public function get_version_on_server() {
-  return trim(file_get_contents(sprintf("http://%s:%s/%s", SELFUPDATE_SERVER, SELFUPDATE_PORT, SELFUPDATE_NEW_VERSION)));
+  return trim(file_get_contents(sprintf("/%s", SELFUPDATE_SERVER, SELFUPDATE_NEW_VERSION)));
  }
 
  static public function start_to_update() {
   foreach (self::$list_to_update as $filename => $info) {
    $fs_filename = str_replace("/",DS,str_replace("./","",$filename));
-   $remote_full_path = sprintf("http://%s:%s/%s", SELFUPDATE_SERVER, SELFUPDATE_PORT, $filename);
+   $remote_full_path = sprintf("/%s", SELFUPDATE_SERVER, $filename);
    Log::write_log(Language::t("Downloading %s [%s Bytes]",basename($filename),$info),0);
    $status = Tools::download_file($remote_full_path, $fs_filename);
    if (is_string($status)) {
@@ -51,7 +51,7 @@ class SelfUpdate {
   }
   global $SELFUPDATE_POSTFIX;
   foreach ($SELFUPDATE_POSTFIX as $file) {
-   Tools::download_file(sprintf("http://%s:%s/%s", SELFUPDATE_SERVER, SELFUPDATE_PORT, $file), str_replace("/",DS,$file));
+   Tools::download_file(sprintf("/%s", SELFUPDATE_SERVER, $file), str_replace("/",DS,$file));
   }
  }
 

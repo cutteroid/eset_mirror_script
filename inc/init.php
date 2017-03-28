@@ -39,8 +39,7 @@ define('SUCCESSFUL_TIMESTAMP', 'nod_lastupdate');
 define('LINKTEST', 'nod_linktest');
 define('DATABASES_SIZE', 'nod_databases_size');
 define('TMP_PATH', 'tmp');
-define('SELFUPDATE_SERVER', "eset.contra.net.ua/nod32ms");
-define('SELFUPDATE_PORT', "443");
+define('SELFUPDATE_SERVER', "https://eset.contra.net.ua/nod32ms");
 define('SELFUPDATE_FILE', "files.md5");
 define('SELFUPDATE_NEW_VERSION', "version.txt");
 define("CONNECTTIMEOUT", 5); # Seconds
