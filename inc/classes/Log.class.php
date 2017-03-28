@@ -2,6 +2,7 @@
 
 class Log {
  static private $log = array();
+ static private $mailer_log = "";
 
  static public function destruct() {
   if (!empty(self::$mailer_log) && Config::get('phpmailer_enable') == '1') {
