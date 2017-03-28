@@ -22,7 +22,7 @@ class SelfUpdate {
   $hashes = array();
   $d = dir($directory);
   while (false !== ($entry = $d->read())) {
-   if (($entry == '.') || ($entry == '..')) {
+   if (($entry == '.') || ($entry == '..') || ($entry == '.git') || ($entry == 'log')) {
     continue;
    }
    if (is_dir($directory . $entry)) {
@@ -42,7 +42,7 @@ class SelfUpdate {
  static public function start_to_update() {
   foreach (self::$list_to_update as $filename => $info) {
    $fs_filename = str_replace("/",DS,str_replace("./","",$filename));
-   $remote_full_path = sprintf("/%s", SELFUPDATE_SERVER, $filename);
+   $remote_full_path = sprintf("http://%s:%s/%s/%s", SELFUPDATE_SERVER, SELFUPDATE_PORT, SELFUPDATE_DIR, $filename);
    Log::write_log(Language::t("Downloading %s [%s Bytes]",basename($filename),$info),0);
    $status = Tools::download_file($remote_full_path, $fs_filename);
    if (is_string($status)) {
