@@ -419,7 +419,7 @@ class Nod32ms {
       Log::informer(Language::t("Your database is relevant %s", $old_version), $version, 2);
      } else {
       Log::write_log( Language::t("The latest database %s was found on %s", $new_version, $mirror), 2, $version);
-     }
+     }/*} - Added for check all db files*/
      $mirrors[$version] = array('mirror' => $mirror, 'old' => $old_version, 'new' => $new_version);
      if (empty($GLOBALS['TESTKEY_REAL_PATH_NOD'])) {
       $content = @file_get_contents($tmp_update_ver);
@@ -435,6 +435,7 @@ class Nod32ms {
        $GLOBALS['TESTKEY_REAL_PATH_ESS'] = trim($matches[0]);
       }
      }
+     /*} - Removed for check all db files*/
     } else {
      Log::write_log(Language::t("All mirrors is down!"), 1, $version);
     }
@@ -460,7 +461,7 @@ class Nod32ms {
      if (empty($mirror['old'])) {
       Log::informer(Language::t("Your database was successfully updated to %s", $mirror['new']), $version, 2);
      } else {
-      Log::informer(Language::t("Your database was successfully updated from %s to %s", $mirror['old'], $mirror['new']), $version, 2);
+      Log::informer((($mirror['old'] == $mirror['new']) ? Language::t("All files for database %s was successfully downloaded", $mirror['new']) : Language::t("Your database was successfully updated from %s to %s", $mirror['old'], $mirror['new'])), $version, 2);
      }
      $this->fix_time_stamp($version);
     }
