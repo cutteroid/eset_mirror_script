@@ -400,7 +400,7 @@ class Mirror {
   }
  }
  
- function exp_nod($Nuser, $Npass) {
+ public function exp_nod($Nuser, $Npass) {
   $NodProduct = "eav";
   $NodVer = "7.0.302.8";
   $NodLang = "419";
@@ -449,8 +449,8 @@ class Mirror {
   </SECTION>
   </GETLICEXP>';
 
-  $opts = array('http' =>
-   array(
+  $opts = array(
+   'http' => array(
     'method'  => 'POST', 
     'header'  => 'Content-type: application/x-www-form-urlencoded', 
     'content' => $xml

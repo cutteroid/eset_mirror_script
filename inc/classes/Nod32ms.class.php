@@ -3,16 +3,16 @@
 class Nod32ms {
  static private $start_time;
 
- function __construct() {
+ public function __construct() {
   Nod32ms::$start_time = time();
   Log::write_log(Language::t("Run script %s", VERSION), 0);
   $this->run_script();
  }
 
- function __destruct() {
+ public function __destruct() {
   Log::write_log(Language::t("Total working time: %s", Tools::secondsToHumanReadable(time()-Nod32ms::$start_time)), 0);
   Log::destruct();
-        Log::write_log(Language::t("Stop script."), 0);
+  Log::write_log(Language::t("Stop script."), 0);
  }
 
  private function check_time_stamp($ver, $return_time_stamp = false) {
@@ -46,7 +46,7 @@ class Nod32ms {
    $handle = file_get_contents($fn);
    $content = Parser::parse_line($handle, false, "/(.:.+)\n/");
    if (isset($content) && count($content)) {
-    foreach($content as $value) {
+    foreach ($content as $value) {
      $result = explode(":", $value);
      $timestamps[$result[0]] = $result[1];
     }
@@ -92,8 +92,7 @@ class Nod32ms {
     }
    }
   }
-  if (!empty($sizes)) return $sizes;
-  else return null;
+  return (!empty($sizes)) ? $sizes : null;
  }
 
  static private function get_all_patterns($directory = PATTERN) {
@@ -122,22 +121,20 @@ class Nod32ms {
    Log::write_log(Language::t("Keys file is empty!"), 4);
    return null;
   }
-  foreach($keys as $value) {
+  foreach ($keys as $value) {
    $result = explode(":", $value);
    $ret = Mirror::test_key($result[0], $result[1]);
    if (is_bool($ret)) {
     if ($ret) {
      Log::write_log(Language::t("Use valid key [%s:%s] Expiration date %s", $result[0], $result[1], $result[2]), 4);
      return $result;
-    }
-    elseif(!$ret) {
+    } elseif (!$ret) {
      Log::write_log(Language::t("Invalid key [%s:%s]", $result[0], $result[1]), 4);
      if (Config::get('remove_invalid_keys') == 1) {
       Parser::delete_parse_line_in_file($result[0].':'.$result[1], Tools::ds(Config::get('log_dir'), KEY_FILE_VALID));
      }
     }
-   }
-   else {
+   } else {
     Log::write_log(Language::t("Unhandled exception [%s]", $ret), 4);
    }
   }
@@ -178,10 +175,10 @@ class Nod32ms {
  private function parse_www_page($this_link, $level, $pattern) {
   static $found_key = false;
   $options = array(
-    'http'=>array(
-     'method'=>"GET",
-     'header'=>"User-Agent: Mozilla/5.0 (Windows; U; Windows NT 6.1; rv:2.2) Gecko/20110201\r\n"
-    )
+   'http'=>array(
+    'method'=>"GET",
+    'header'=>"User-Agent: Mozilla/5.0 (Windows; U; Windows NT 6.1; rv:2.2) Gecko/20110201\r\n"
+   )
   );
   $context = stream_context_create($options);
   $search = @file_get_contents($this_link, false, $context);
@@ -224,7 +221,7 @@ class Nod32ms {
        $found_key = true;
        return true;
       }
-     } elseif(!$ret) {
+     } elseif (!$ret) {
       Log::write_log(Language::t("Found invalid key [%s:%s]", $login[$b], $passwd[$b]), 4);
      }
     } else {

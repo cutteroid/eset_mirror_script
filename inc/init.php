@@ -13,6 +13,7 @@ $DIRECTORIES = array(
  9 => 'eset_upd/v9',
  10 => 'eset_upd/v10',
 );
+
 $SELFUPDATE_POSTFIX = array(
  "changelog.rus.1251",
  "changelog.rus.koi8-r",
@@ -22,7 +23,6 @@ $SELFUPDATE_POSTFIX = array(
 );
 
 define('DS', DIRECTORY_SEPARATOR);
-
 define('VERSION', '1.0.191014 [Freedom for Ukraine][Moded by harmless]');
 define('SELF', substr(dirname(__FILE__),0,-3)); 
 define('INC', substr(dirname(__FILE__),0,-3)."inc".DS);

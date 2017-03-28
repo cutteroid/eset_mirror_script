@@ -33,7 +33,7 @@ class Tools {
  }
 
  static public function extract_file($source, $dest) {
-  switch(PHP_OS) {
+  switch (PHP_OS) {
    case "Darwin": 
    case "Linux":
    case "FreeBSD":
@@ -43,8 +43,7 @@ class Tools {
  }
 
  static public function ping($hostname, $port = 80) {
-  $fs = @fsockopen($hostname, $port, $errno, $errstr, CONNECTTIMEOUT);
-  if ($fs) {
+  if ($fs = @fsockopen($hostname, $port, $errno, $errstr, CONNECTTIMEOUT)) {
    fclose($fs);
    return true;
   } else return false;
@@ -58,13 +57,11 @@ class Tools {
  }
  
  static public function secondsToHumanReadable($secs) {
-  if ($secs > 60*60*24) return gmdate("H:i:s", $secs);
-  else return gmdate("i:s", $secs);
+  return ($secs > 60*60*24) ? gmdate("H:i:s", $secs) : gmdate("i:s", $secs);
  }
 
  static public function ds() {
-  $args = func_get_args();
-  return preg_replace('/[\/\\\\]+/', DIRECTORY_SEPARATOR, implode('/', $args));
+  return preg_replace('/[\/\\\\]+/', DIRECTORY_SEPARATOR, implode('/', func_get_args()));
  }
  
  static public function conv($text, $to_encoding) {
@@ -73,12 +70,12 @@ class Tools {
   elseif (function_exists('iconv')) return iconv('UTF-8', $to_encoding, $text);
   else {
    $conv = array();
-   for($x=128;$x<=143;$x++)  {
+   for ($x=128;$x<=143;$x++)  {
     $conv['u'][]=chr(209).chr($x);
     $conv['w'][]=chr($x+112);
   
    }
-   for($x=144;$x<=191;$x++)  {
+   for ($x=144;$x<=191;$x++)  {
     $conv['u'][]=chr(208).chr($x);
     $conv['w'][]=chr($x+48);
    }
@@ -115,7 +112,7 @@ class Tools {
  }
  
  static public function parse_url($url) { 
-  if(strpos($url,"://")===false && substr($url,0,1)!="/") $url = "http://".$url;
+  if (strpos($url,"://")===false && substr($url,0,1)!="/") $url = "http://".$url;
   $parsed_url = parse_url($url);
   $parsed_url['scheme'] = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : 'http://'; 
   $parsed_url['host']  = isset($parsed_url['host']) ? $parsed_url['host'] : ''; 
