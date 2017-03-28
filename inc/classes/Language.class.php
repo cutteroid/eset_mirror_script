@@ -15,8 +15,7 @@ class Language {
    if (!file_exists(Language::$language_file)) {
     return sprintf("Language file [%s.ini] does not exist!", $lang);
    }
-  }
-  else {
+  } else {
    return null;
   }
   
