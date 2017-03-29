@@ -17,8 +17,6 @@ $DIRECTORIES = array(
 $SELFUPDATE_POSTFIX = array(
  "changelog.rus",
  "changelog.eng",
- "nod32ms.conf.rus",
- "nod32ms.conf.eng",
 );
 
 define('DS', DIRECTORY_SEPARATOR);
