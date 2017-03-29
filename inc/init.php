@@ -15,15 +15,12 @@ $DIRECTORIES = array(
 );
 
 $SELFUPDATE_POSTFIX = array(
- "changelog.rus.1251",
- "changelog.rus.koi8-r",
+ "changelog.rus",
  "changelog.eng",
- "nod32ms.conf.rus",
- "nod32ms.conf.eng",
 );
 
 define('DS', DIRECTORY_SEPARATOR);
-define('VERSION', '1.0.20190328 [Freedom for Ukraine][Moded by harmless]');
+define('VERSION', '1.0.20190329 [Freedom for Ukraine][Moded by harmless]');
 define('SELF', substr(dirname(__FILE__),0,-3)); 
 define('INC', substr(dirname(__FILE__),0,-3)."inc".DS);
 define('CLASSES', substr(dirname(__FILE__),0,-3)."inc".DS."classes".DS);

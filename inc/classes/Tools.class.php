@@ -37,7 +37,7 @@ class Tools {
    case "Darwin": 
    case "Linux":
    case "FreeBSD":
-   case "OpenBSD": system(sprintf("`which unrar` x -inul -y %s %s", $source, $dest)); break;
+   case "OpenBSD": system(sprintf("`/usr/bin/which unrar` x -inul -y %s %s", $source, $dest)); break;
    case "WINNT": shell_exec(sprintf(TOOLS."unrar.exe e -y %s %s", $source, $dest)); break;
   }
  }
