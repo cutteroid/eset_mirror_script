@@ -32,8 +32,7 @@ class Mirror {
   $dir = $DIRECTORIES[array_rand($DIRECTORIES)];
   $test_mirrors = array();
   if (function_exists('curl_multi_init')){
-   $treads = 20;
-   $treads = (sizeof($mirrors) < $treads) ? sizeof($mirrors) : $treads;
+   $treads = sizeof($mirrors);
    $master = curl_multi_init();
    $options = array(
     CURLOPT_CONNECTTIMEOUT => CONNECTTIMEOUT,
@@ -154,19 +153,19 @@ class Mirror {
    foreach ($matches[0] as $container) {
     parse_str((str_replace("\r\n", "&", $container)), $output);
     if (intval($version) != 10) {
-        if ( empty($output['file']) or empty($output['size']) or empty($output['date']) or
-         (!empty($output['language']) and !in_array($output['language'], Config::get('update_version_lang'))) or
-         (Config::get('update_version_x32') != 1 and preg_match("/32|86/", $output['platform'])) or
-         (Config::get('update_version_x64') != 1 and preg_match("/64/", $output['platform'])) or
-         (Config::get('update_version_ess') != 1 and preg_match("/ess/", $output['type'])) ){
+      if ( empty($output['file']) or empty($output['size']) or empty($output['date']) or
+      (!empty($output['language']) and !in_array($output['language'], Config::get('update_version_lang'))) or
+      (Config::get('update_version_x32') != 1 and preg_match("/32|86/", $output['platform'])) or
+      (Config::get('update_version_x64') != 1 and preg_match("/64/", $output['platform'])) or
+      (Config::get('update_version_ess') != 1 and preg_match("/ess/", $output['type'])) ){
          continue;
-        }
+      }
     } else {
-        if ( empty($output['file']) or empty($output['size']) or
-                     (Config::get('update_version_x32') != 1 and preg_match("/32|86/", $output['platform'])) or
-                     (Config::get('update_version_x64') != 1 and preg_match("/64/", $output['platform']))){
-                     continue;
-        }
+      if ( empty($output['file']) or empty($output['size']) or
+      (Config::get('update_version_x32') != 1 and preg_match("/32|86/", $output['platform'])) or
+      (Config::get('update_version_x64') != 1 and preg_match("/64/", $output['platform']))){
+        continue;
+      }
     }
     $new_files[] = array($output['file'], $output['size']);
     $total_size += $output['size'];
@@ -228,9 +227,8 @@ class Mirror {
     if ($mirror != null) {
      if (function_exists('curl_multi_init')){
       $test = false;
-      $treads = 10;
       $file = array();
-      $treads = (count($download_files) < $treads) ? count($download_files) : $treads;
+      $treads = sizeof($download_files);
       $master = curl_multi_init();
       $options = array(
        CURLOPT_USERPWD => "$pair_key[0]:$pair_key[1]",
