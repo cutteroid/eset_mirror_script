@@ -6,11 +6,11 @@
 # Nginx simple configuration
 map $http_user_agent $dir {
 
- default                                /index.html;
+ default                        /index.html;
 
- ~^(ESS.*BPC.3)                         /eset_upd/update.ver;
+ ~^(ESS.*BPC.3)                 /eset_upd/update.ver;
 
- ~^(ESS\ Update.*BPC\ (?<ver>\d+))      /eset_upd/v$ver/update.ver;
+ ~^(.*Update.*BPC\ (?<ver>\d+))	/eset_upd/v$ver/update.ver;
 
 }
 
