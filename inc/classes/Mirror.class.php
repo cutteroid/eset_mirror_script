@@ -248,7 +248,7 @@ class Mirror
                         $handles = array();
                         for ($i = 0; $i < $treads; $i++) {
                             $ch = curl_init();
-                            $handles[spl_object_hash($ch)] = $mirror;
+                            $handles[Tools::get_resource_id($ch)] = $mirror;
                             $res = dirname(Tools::ds($dir, $download_files[$i]));
                             if (!@file_exists($res)) @mkdir($res, 0755, true);
                             $url = "http://" . $mirror . $download_files[$i];
@@ -265,13 +265,13 @@ class Mirror
                             while ($done = curl_multi_info_read($master)) {
                                 $ch = $done['handle'];
                                 $info = curl_getinfo($ch);
-                                $host = $handles[spl_object_hash($ch)];
+                                $host = $handles[Tools::get_resource_id($ch)];
                                 if ($info['http_code'] == 200) {
                                     @fclose($file[$info['url']]);
                                     unset($file[$info['url']]);
                                     $parsed_url = parse_url($info['url']);
                                     Log::write_log(Language::t("From %s downloaded %s [%s] [%s/s]", $host, basename($info['url']), Tools::bytesToSize1024($info['download_content_length']), Tools::bytesToSize1024($info['speed_download'])), 3, $version);
-                                    unset($handles[spl_object_hash($ch)]);
+                                    unset($handles[Tools::get_resource_id($ch)]);
                                     $total_downloads += $info['download_content_length'];
                                     $i++;
                                     if (isset($download_files[$i])) {
@@ -279,7 +279,7 @@ class Mirror
                                         $res = dirname(Tools::ds($dir, $download_files[$i]));
                                         if (!@file_exists($res)) @mkdir($res, 0755, true);
                                         $url = "http://" . $mirror . $download_files[$i];
-                                        $handles[spl_object_hash($ch)] = $mirror;
+                                        $handles[Tools::get_resource_id($ch)] = $mirror;
                                         $file[$url] = @fopen(Tools::ds($dir, $download_files[$i]), 'w');
                                         $options[CURLOPT_URL] = $url;
                                         $options[CURLOPT_FILE] = $file[$url];
@@ -298,7 +298,7 @@ class Mirror
                                         if ($mirror != null) {
                                             $ch = curl_init();
                                             $url = "http://" . $mirror . $parsed_url['path'];
-                                            $handles[spl_object_hash($ch)] = $mirror;
+                                            $handles[Tools::get_resource_id($ch)] = $mirror;
                                             $file[$url] = @fopen(Tools::ds($dir, $parsed_url['path']), 'w');
                                             $options[CURLOPT_URL] = $url;
                                             $options[CURLOPT_FILE] = $file[$url];

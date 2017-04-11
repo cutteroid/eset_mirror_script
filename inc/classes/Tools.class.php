@@ -128,4 +128,11 @@ class Tools
             else return $text;
         }
     }
+
+    static public function get_resource_id($resource)
+    {
+        if (!is_resource($resource))
+            return false;
+        return array_pop(explode('#', (string)$resource));
+    }
 }
