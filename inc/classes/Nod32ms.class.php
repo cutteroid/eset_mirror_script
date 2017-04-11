@@ -343,7 +343,6 @@ class Nod32ms
     private function generate_html($time_run_script)
     {
         Log::write_log(Language::t("Generating html..."), 0);
-        $i = 0;
         $total_size = $this->get_datebases_size();
         $key = null;
         if (file_exists(Tools::ds(Config::get('log_dir'), KEY_FILE_VALID))) {
@@ -353,15 +352,22 @@ class Nod32ms
 
         $html_page = '';
         if (Config::get('generate_only_table') == '0') {
-            $html_page .= '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"><html><head><title>';
-            $html_page .= Language::t("ESET NOD32 update server");
-            $html_page .= '</title><meta http-equiv="Content-Type" content="text/html; charset=' . Config::get('html_codepage');
-            $html_page .= '"><style type="text/css">html,body{height:100%;margin:0;padding:0;width:100%}table#center{border:0;height:100%;width:100%}table td table td{text-align:center;vertical-align:middle;font-weight:bold;padding:10px 15px;border:0}.gray{background:#eee}.orange{background:#fc0}</style></head><body><table id="center"><tr><td align="center">';
+            $html_page .= '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">';
+            $html_page .= '<html>';
+            $html_page .= '<head>';
+            $html_page .= '<title>' . Language::t("ESET NOD32 update server") . '</title>';
+            $html_page .= '<meta http-equiv="Content-Type" content="text/html; charset=' . Config::get('html_codepage').'">';
+            $html_page .= '<style type="text/css">html,body{height:100%;margin:0;padding:0;width:100%}table#center{border:0;height:100%;width:100%}table td table td{text-align:center;vertical-align:middle;font-weight:bold;padding:10px 15px;border:0}table tr:nth-child(odd){background:#eee}table tr:nth-child(even){background:#fc0}</style>';
+            $html_page .= '</head>';
+            $html_page .= '<body>';
+            $html_page .= '<table id="center">';
+            $html_page .= '<tr>';
+            $html_page .= '<td align="center">';
         }
 
         $html_page .= '<table>';
         $html_page .= '<tr><td colspan="4">' . Language::t("ESET NOD32 update server") . '</td></tr>';
-        $html_page .= '<tr' . (Config::get('generate_only_table') ? '' : ' class="orange"') . '>';
+        $html_page .= '<tr>';
         $html_page .= '<td></td>';
         $html_page .= '<td>' . Language::t("Database version") . '</td>';
         $html_page .= '<td>' . Language::t("Database size") . '</td>';
@@ -374,8 +380,7 @@ class Nod32ms
                 $update_ver = Tools::ds(Config::get('web_dir'), $dir, 'update.ver');
                 $version = Mirror::get_DB_version($update_ver);
                 $timestamp = $this->check_time_stamp($ver, true);
-                $html_page .= '<tr' . (((Config::get('generate_only_table') == "0") and ($i % 2 != 0)) ? ' class="gray"' : '') . '>';
-                $i++;
+                $html_page .= '<tr>';
                 $html_page .= '<td>' . Language::t("Version %d", $ver) . '</td>';
                 $html_page .= '<td>' . $version . '</td>';
                 $html_page .= '<td>' . (isset($total_size[$ver]) ? Tools::bytesToSize1024($total_size[$ver]) : Language::t("n/a")) . '</td>';
@@ -385,58 +390,41 @@ class Nod32ms
         }
 
         $html_page .= '<tr>';
-        $html_page .= '<td colspan="2" ' . ((Config::get('generate_only_table') == "0") ? 'class="orange"' : '') . '>' . Language::t("Present versions") . '</td>';
-        $html_page .= '<td colspan="2" ' . (((Config::get('generate_only_table') == "0") and ($i % 2 != 0)) ? 'class="gray"' : '') . '>';
-        $i++;
-        $html_page .= Config::get('update_version_ess') ? 'EAV, ESS' : 'EAV';
-        $html_page .= '</td>';
+        $html_page .= '<td colspan="2">' . Language::t("Present versions") . '</td>';
+        $html_page .= '<td colspan="2">' . (Config::get('update_version_ess') ? 'EAV, ESS' : 'EAV') . '</td>';
         $html_page .= '</tr>';
 
         $html_page .= '<tr>';
-        $html_page .= '<td colspan="2" ' . ((Config::get('generate_only_table') == "0") ? 'class="orange"' : '') . '>' . Language::t("Present platforms") . '</td>';
-        $html_page .= '<td colspan="2" ' . (((Config::get('generate_only_table') == "0") and ($i % 2 != 0)) ? 'class="gray"' : '') . '>';
-        $i++;
-        $html_page .= Config::get('update_version_x32') ? '32bit' : '';
-        $html_page .= Config::get('update_version_x64') ? (Config::get('update_version_x32') ? ', 64bit' : '64bit') : '';
-        $html_page .= '</td>';
+        $html_page .= '<td colspan="2">' . Language::t("Present platforms") . '</td>';
+        $html_page .= '<td colspan="2">' . ((Config::get('update_version_x32') ? '32bit' : '') . (Config::get('update_version_x64') ? (Config::get('update_version_x32') ? ', 64bit' : '64bit') : '')) . '</td>';
         $html_page .= '</tr>';
 
         $html_page .= '<tr>';
-        $html_page .= '<td colspan="2" ' . ((Config::get('generate_only_table') == "0") ? 'class="orange"' : '') . '>' . Language::t("Present languages") . '</td>';
-        $html_page .= '<td colspan="2" ' . (((Config::get('generate_only_table') == "0") and ($i % 2 != 0)) ? 'class="gray"' : '') . '>';
-        $i++;
-        $html_page .= Config::get('present_languages') . '</td>';
+        $html_page .= '<td colspan="2">' . Language::t("Present languages") . '</td>';
+        $html_page .= '<td colspan="2">' . Config::get('present_languages') . '</td>';
         $html_page .= '</tr>';
 
         $html_page .= '<tr>';
-        $html_page .= '<td colspan="2" ' . ((Config::get('generate_only_table') == "0") ? 'class="orange"' : '') . '>' . Language::t("Last execution of the script") . '</td>';
-        $html_page .= '<td colspan="2" ' . (((Config::get('generate_only_table') == "0") and ($i % 2 != 0)) ? 'class="gray"' : '') . '>';
-        $i++;
-        $html_page .= ($time_run_script ? date("Y-m-d, H:i:s", $time_run_script) : Language::t("n/a")) . '</td>';
+        $html_page .= '<td colspan="2">' . Language::t("Last execution of the script") . '</td>';
+        $html_page .= '<td colspan="2">' . ($time_run_script ? date("Y-m-d, H:i:s", $time_run_script) : Language::t("n/a")) . '</td>';
         $html_page .= '</tr>';
 
         if ((Config::get('show_login_password')) and ($key !== null)) {
             $html_page .= '<tr>';
-            $html_page .= '<td colspan="2" ' . ((Config::get('generate_only_table') == "0") ? 'class="orange"' : '') . '>' . Language::t("Used login") . '</td>';
-            $html_page .= '<td colspan="2" ' . (((Config::get('generate_only_table') == "0") and ($i % 2 != 0)) ? 'class="gray"' : '') . '>';
-            $i++;
-            $html_page .= $key[0] . '</td>';
+            $html_page .= '<td colspan="2">' . Language::t("Used login") . '</td>';
+            $html_page .= '<td colspan="2">' . $key[0] . '</td>';
             $html_page .= '</tr>';
 
             $html_page .= '<tr>';
-            $html_page .= '<td colspan="2" ' . ((Config::get('generate_only_table') == "0") ? 'class="orange"' : '') . '>' . Language::t("Used password") . '</td>';
-            $html_page .= '<td colspan="2" ' . (((Config::get('generate_only_table') == "0") and ($i % 2 != 0)) ? 'class="gray"' : '') . '>';
-            $i++;
-            $html_page .= $key[1] . '</td>';
+            $html_page .= '<td colspan="2">' . Language::t("Used password") . '</td>';
+            $html_page .= '<td colspan="2">' . $key[1] . '</td>';
             $html_page .= '</tr>';
 
             if (isset($key[2])) {
                 $html_page .= '<tr>';
-                $html_page .= '<td colspan="2" ' . ((Config::get('generate_only_table') == "0") ? 'class="orange"' : '') . '>' . Language::t("Expiration date") . '</td>';
-                $html_page .= '<td colspan="2" ' . (((Config::get('generate_only_table') == "0") and ($i % 2 != 0)) ? 'class="gray"' : '') . '>';
-                $html_page .= $key[2] . '</td>';
+                $html_page .= '<td colspan="2">' . Language::t("Expiration date") . '</td>';
+                $html_page .= '<td colspan="2">' . $key[2] . '</td>';
                 $html_page .= '</tr>';
-                $i++;
             }
         }
         $html_page .= '</table>';
