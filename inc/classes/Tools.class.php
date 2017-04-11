@@ -133,6 +133,6 @@ class Tools
     {
         if (!is_resource($resource))
             return false;
-        return array_pop(explode('#', (string)$resource));
+        return @end(explode('#', (string)$resource));
     }
 }
