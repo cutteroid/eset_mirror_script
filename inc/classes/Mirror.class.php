@@ -230,7 +230,7 @@ class Mirror
             if (!empty($download_files)) {
                 shuffle($download_files);
                 Log::write_log(Language::t("Downloading %d files", count($download_files)), 3, $version);
-                if (Tools::ping($mirror) != true) list($mirror, $new_version) = Mirror::check_mirror($version, $pair_key);
+                if (Tools::ping($mirror) != true) list($mirror, ) = Mirror::check_mirror($version, $pair_key);
                 if ($mirror != null) {
                     if (function_exists('curl_multi_init')) {
                         $test = false;
@@ -248,7 +248,7 @@ class Mirror
                         $handles = array();
                         for ($i = 0; $i < $treads; $i++) {
                             $ch = curl_init();
-                            $handles[$ch] = $mirror;
+                            $handles[spl_object_hash($ch)] = $mirror;
                             $res = dirname(Tools::ds($dir, $download_files[$i]));
                             if (!@file_exists($res)) @mkdir($res, 0755, true);
                             $url = "http://" . $mirror . $download_files[$i];
@@ -265,13 +265,13 @@ class Mirror
                             while ($done = curl_multi_info_read($master)) {
                                 $ch = $done['handle'];
                                 $info = curl_getinfo($ch);
-                                $host = $handles[$ch];
+                                $host = $handles[spl_object_hash($ch)];
                                 if ($info['http_code'] == 200) {
                                     @fclose($file[$info['url']]);
                                     unset($file[$info['url']]);
                                     $parsed_url = parse_url($info['url']);
                                     Log::write_log(Language::t("From %s downloaded %s [%s] [%s/s]", $host, basename($info['url']), Tools::bytesToSize1024($info['download_content_length']), Tools::bytesToSize1024($info['speed_download'])), 3, $version);
-                                    unset($handles[$ch]);
+                                    unset($handles[spl_object_hash($ch)]);
                                     $total_downloads += $info['download_content_length'];
                                     $i++;
                                     if (isset($download_files[$i])) {
@@ -279,7 +279,7 @@ class Mirror
                                         $res = dirname(Tools::ds($dir, $download_files[$i]));
                                         if (!@file_exists($res)) @mkdir($res, 0755, true);
                                         $url = "http://" . $mirror . $download_files[$i];
-                                        $handles[$ch] = $mirror;
+                                        $handles[spl_object_hash($ch)] = $mirror;
                                         $file[$url] = @fopen(Tools::ds($dir, $download_files[$i]), 'w');
                                         $options[CURLOPT_URL] = $url;
                                         $options[CURLOPT_FILE] = $file[$url];
@@ -293,12 +293,12 @@ class Mirror
                                     $parsed_url = parse_url($info['url']);
                                     if (!empty($GLOBALS['mirrors'])) {
                                         if ($host == array_shift(array_values($GLOBALS['mirrors']))) {
-                                            list($mirror, $new_version) = Mirror::check_mirror($version, $pair_key);
+                                            list($mirror, ) = Mirror::check_mirror($version, $pair_key);
                                         }
                                         if ($mirror != null) {
                                             $ch = curl_init();
                                             $url = "http://" . $mirror . $parsed_url['path'];
-                                            $handles[$ch] = $mirror;
+                                            $handles[spl_object_hash($ch)] = $mirror;
                                             $file[$url] = @fopen(Tools::ds($dir, $parsed_url['path']), 'w');
                                             $options[CURLOPT_URL] = $url;
                                             $options[CURLOPT_FILE] = $file[$url];
@@ -329,10 +329,10 @@ class Mirror
                                         $test = false;
                                         $size = $header['Content-Length'];
                                         $total_downloads += $size;
-                                        Log::write_log(Language::t("From %s downloaded %s [%s] [%s/s]", $host, basename($file), Tools::bytesToSize1024($header['Content-Length']), Tools::bytesToSize1024($header['Content-Length'] / (microtime(true) - $time))), 3, $version);
+                                        Log::write_log(Language::t("From %s downloaded %s [%s] [%s/s]", $mirror, basename($file), Tools::bytesToSize1024($header['Content-Length']), Tools::bytesToSize1024($header['Content-Length'] / (microtime(true) - $time))), 3, $version);
                                         $total_downloads += $header['Content-Length'];
                                     } else {
-                                        list($mirror, $new_version) = Mirror::check_mirror($version, $pair_key);
+                                        list($mirror, ) = Mirror::check_mirror($version, $pair_key);
                                     }
                                     if ($mirror == null) $test = false;
                                 }

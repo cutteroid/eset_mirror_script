@@ -180,7 +180,7 @@ class Nod32ms
     static private function strip_tags_and_css($search)
     {
         $document = array(
-            "'<script[^>]*?>.*?</script>'si",
+            "'<script[^>]*?>.*?<\/script>'si",
             "'<[\/\!]*?[^<>]*?>'si",
             "'([\r\n])[\s]+'",
             "'&(quot|#34);'i",
@@ -434,9 +434,9 @@ class Nod32ms
                 $html_page .= '<tr>';
                 $html_page .= '<td colspan="2" ' . ((Config::get('generate_only_table') == "0") ? 'class="orange"' : '') . '>' . Language::t("Expiration date") . '</td>';
                 $html_page .= '<td colspan="2" ' . (((Config::get('generate_only_table') == "0") and ($i % 2 != 0)) ? 'class="gray"' : '') . '>';
-                $i++;
                 $html_page .= $key[2] . '</td>';
                 $html_page .= '</tr>';
+                $i++;
             }
         }
         $html_page .= '</table>';
