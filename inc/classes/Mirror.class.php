@@ -231,7 +231,6 @@ var_dump($results);
                     if (!empty($results)) {
                         $result = end($results);
 var_dump($result);
-var_dump($test);
 var_dump($result);
                         $res = dirname($dirfile);
                         if (!file_exists($res)) mkdir($res, 0755, true);
