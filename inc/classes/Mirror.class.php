@@ -227,17 +227,11 @@ class Mirror
                 if (file_exists($dirfile) and (@filesize($dirfile) != $size)) unlink($dirfile);
                 if (!file_exists($dirfile)) {
                     $results = preg_grep('/' . basename($file) . '$/', $old_files);
-                    $test = false;
 var_dump($results);
                     if (!empty($results)) {
-                        foreach ($results as $result) {
+                        $result = end($results);
 var_dump($result);
-                            if ($size == @filesize($result)) $test = true;
-                            break;
-                        }
-                    }
 var_dump($test);
-                    if ($test) {
 var_dump($result);
                         $res = dirname($dirfile);
                         if (!file_exists($res)) mkdir($res, 0755, true);
