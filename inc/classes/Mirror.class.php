@@ -1,7 +1,15 @@
 <?php
 
+/**
+ * Class Mirror
+ */
 class Mirror
 {
+    /**
+     * @param $login
+     * @param $passwd
+     * @return bool
+     */
     static public function test_key($login, $passwd)
     {
         $mirrors = Config::get('mirror');
@@ -24,6 +32,9 @@ class Mirror
         return false;
     }
 
+    /**
+     * @param $key
+     */
     static public function find_best_mirrors($key)
     {
         $mirrors = Config::get('mirror');
@@ -91,10 +102,17 @@ class Mirror
         $GLOBALS['mirrors'] = $best_mirrors;
     }
 
+    /**
+     * @param $version
+     * @param $key
+     * @return array
+     */
     static public function check_mirror($version, $key)
     {
         $login = $key[0];
         $password = $key[1];
+        $mirror = null;
+        $new_version = null;
         global $DIRECTORIES;
         $dir = $DIRECTORIES[$version];
         $cur_update_ver = Tools::ds(Config::get('web_dir'), $dir, 'update.ver');
@@ -121,10 +139,13 @@ class Mirror
             }
             array_shift($GLOBALS['mirrors']);
         }
-        if (!empty($GLOBALS['mirrors'])) return array($mirror, $new_version);
-        else return array(null, null);
+        return array($mirror, $new_version);
     }
 
+    /**
+     * @param $file
+     * @return int|null
+     */
     static public function get_DB_version($file)
     {
         if (!file_exists($file)) return null;
@@ -140,6 +161,12 @@ class Mirror
         return $max;
     }
 
+    /**
+     * @param $version
+     * @param $mirror
+     * @param $pair_key
+     * @return array
+     */
     static public function download_signature($version, $mirror, $pair_key)
     {
         global $DIRECTORIES;
@@ -147,12 +174,16 @@ class Mirror
         $cur_update_ver = Tools::ds($dir, $DIRECTORIES[$version], 'update.ver');
         $tmp_update_ver = Tools::ds($dir, TMP_PATH, $DIRECTORIES[$version], 'update.ver');
         $content = @file_get_contents($tmp_update_ver);
+        $new_content = '';
+        $old_files = array();
+        $new_files = array();
+        $total_size = 0;
+        $total_downloads = 0;
+        $average_speed = 0;
+        $download_files = array();
+        $needed_files = array();
         preg_match_all('#\[\w+\][^\[]+#', $content, $matches);
         if (!empty($matches)) {
-            $new_content = '';
-            $new_files = array();
-            $total_size = 0;
-
             // Parse files from .ver file
             foreach ($matches[0] as $container) {
                 parse_str((str_replace("\r\n", "&", $container)), $output);
@@ -179,16 +210,16 @@ class Mirror
             }
 
             // Create hardlinks/copy file for empty needed files (name, size)
-            $old_files = array();
-            $Directory = new RecursiveDirectoryIterator($dir);
-            $It = new RecursiveIteratorIterator($Directory, RecursiveIteratorIterator::SELF_FIRST);
-            $Regex1 = new RecursiveRegexIterator($Directory, '/v\d+-' . Config::get('update_version_filter') . '/i');
-            $It2 = new RecursiveIteratorIterator($Regex1);
-            $Regex2 = new RegexIterator($It2, '/\.nup$/i');
-            foreach ($Regex2 as $file) $old_files[] = $file->getPathname();
+            $iterator = new RegexIterator(
+                new RecursiveIteratorIterator(
+                    new RecursiveRegexIterator(
+                        new RecursiveDirectoryIterator($dir),
+                        '/v\d+-' . Config::get('update_version_filter') . '/i')),
+                    '/\.nup$/i'
+            );
+            foreach ($iterator as $file)
+                $old_files[] = $file->getPathname();
 
-            $download_files = array();
-            $needed_files = array();
             foreach ($new_files as $array) {
                 list($file, $size) = $array;
                 $dirfile = Tools::ds($dir, $file);
@@ -224,186 +255,50 @@ class Mirror
             }
 
             // Download files
-            $total_downloads = 0;
-            $average_speed = 0;
             $start_time = microtime(true);
             if (!empty($download_files)) {
                 shuffle($download_files);
                 Log::write_log(Language::t("Downloading %d files", count($download_files)), 3, $version);
                 if (Tools::ping($mirror) != true) list($mirror, ) = Mirror::check_mirror($version, $pair_key);
                 if ($mirror != null) {
-                    if (function_exists('curl_multi_init')) {
-                        $test = false;
-                        $file = array();
-                        $treads = sizeof($download_files);
-                        $master = curl_multi_init();
-                        $options = array(
-                            CURLOPT_USERPWD => "$pair_key[0]:$pair_key[1]",
-                            CURLOPT_BINARYTRANSFER => true,
-                            CURLOPT_CONNECTTIMEOUT => CONNECTTIMEOUT,
-                            CURLOPT_HEADER => false,
-                            CURLOPT_FOLLOWLOCATION => true,
-                            CURLOPT_MAXREDIRS => 5
-                        );
-                        $handles = array();
-                        for ($i = 0; $i < $treads; $i++) {
-                            $ch = curl_init();
-                            $handles[Tools::get_resource_id($ch)] = $mirror;
-                            $res = dirname(Tools::ds($dir, $download_files[$i]));
-                            if (!@file_exists($res)) @mkdir($res, 0755, true);
-                            $url = "http://" . $mirror . $download_files[$i];
-                            $file[$url] = fopen(Tools::ds($dir, $download_files[$i]), 'w');
-                            $options[CURLOPT_URL] = $url;
-                            $options[CURLOPT_FILE] = $file[$url];
-                            curl_setopt_array($ch, $options);
-                            curl_multi_add_handle($master, $ch);
-                        }
-                        do {
-                            while (($execrun = curl_multi_exec($master, $running)) == CURLM_CALL_MULTI_PERFORM) ;
-                            curl_multi_select($master);
-                            if ($execrun != CURLM_OK) break;
-                            while ($done = curl_multi_info_read($master)) {
-                                $ch = $done['handle'];
-                                $info = curl_getinfo($ch);
-                                $host = $handles[Tools::get_resource_id($ch)];
-                                if ($info['http_code'] == 200) {
-                                    @fclose($file[$info['url']]);
-                                    unset($file[$info['url']]);
-                                    $parsed_url = parse_url($info['url']);
-                                    Log::write_log(Language::t("From %s downloaded %s [%s] [%s/s]", $host, basename($info['url']), Tools::bytesToSize1024($info['download_content_length']), Tools::bytesToSize1024($info['speed_download'])), 3, $version);
-                                    unset($handles[Tools::get_resource_id($ch)]);
-                                    $total_downloads += $info['download_content_length'];
-                                    $i++;
-                                    if (isset($download_files[$i])) {
-                                        $ch = curl_init();
-                                        $res = dirname(Tools::ds($dir, $download_files[$i]));
-                                        if (!@file_exists($res)) @mkdir($res, 0755, true);
-                                        $url = "http://" . $mirror . $download_files[$i];
-                                        $handles[Tools::get_resource_id($ch)] = $mirror;
-                                        $file[$url] = @fopen(Tools::ds($dir, $download_files[$i]), 'w');
-                                        $options[CURLOPT_URL] = $url;
-                                        $options[CURLOPT_FILE] = $file[$url];
-                                        curl_setopt_array($ch, $options);
-                                        curl_multi_add_handle($master, $ch);
-                                    }
-                                } else {
-                                    @fclose($file[$info['url']]);
-                                    Log::write_log(Language::t("Error download url %s", $info['url']), 3, $version);
-                                    print_r($info);
-                                    $parsed_url = parse_url($info['url']);
-                                    if (!empty($GLOBALS['mirrors'])) {
-                                        if ($host == array_shift(array_values($GLOBALS['mirrors']))) {
-                                            list($mirror, ) = Mirror::check_mirror($version, $pair_key);
-                                        }
-                                        if ($mirror != null) {
-                                            $ch = curl_init();
-                                            $url = "http://" . $mirror . $parsed_url['path'];
-                                            $handles[Tools::get_resource_id($ch)] = $mirror;
-                                            $file[$url] = @fopen(Tools::ds($dir, $parsed_url['path']), 'w');
-                                            $options[CURLOPT_URL] = $url;
-                                            $options[CURLOPT_FILE] = $file[$url];
-                                            curl_setopt_array($ch, $options);
-                                            curl_multi_add_handle($master, $ch);
-
-                                        } else $test = true;
-                                    } else $test = true;
-                                }
-                                curl_multi_remove_handle($master, $done['handle']);
-                                curl_close($done['handle']);
-                            }
-                        } while ($running);
-                        curl_multi_close($master);
-                        if ($test == true) {
-                            Log::write_log(Language::t("All mirrors is down!"), 3, $version);
-                            return array(null, null, null);
-                        }
-                    } else {
-                        foreach ($download_files as $file) {
-                            if ($mirror != null) {
-                                $dest = Tools::ds($dir, $file);
-                                $test = true;
-                                while ($test) {
-                                    $time = microtime(true);
-                                    $header = Tools::download_file("http://$pair_key[0]:$pair_key[1]@$mirror$file", $dest);
-                                    if (is_array($header) and !empty($header[0]) and preg_match("/200/", $header[0])) {
-                                        $test = false;
-                                        $size = $header['Content-Length'];
-                                        $total_downloads += $size;
-                                        Log::write_log(Language::t("From %s downloaded %s [%s] [%s/s]", $mirror, basename($file), Tools::bytesToSize1024($header['Content-Length']), Tools::bytesToSize1024($header['Content-Length'] / (microtime(true) - $time))), 3, $version);
-                                        $total_downloads += $header['Content-Length'];
-                                    } else {
-                                        list($mirror, ) = Mirror::check_mirror($version, $pair_key);
-                                    }
-                                    if ($mirror == null) $test = false;
-                                }
-                            } else {
-                                Log::write_log(Language::t("All mirrors is down!"), 3, $version);
-                                return array(null, null, null);
-                            }
-                        }
-                    }
+                    static::download($download_files, $mirror, $dir, $version, $pair_key);
                 } else {
                     Log::write_log(Language::t("All mirrors is down!"), 3, $version);
                     return array(null, null, null);
                 }
-            }
-            $end_time = microtime(true);
 
-            // Delete not needed files
-            $del_files = 0;
-            foreach (glob(Tools::ds($dir, 'v' . $version . '-rel-*'), GLOB_ONLYDIR) as $list) {
-                foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($list), RecursiveIteratorIterator::SELF_FIRST) as $fileObject) {
-                    if (!$fileObject->isDir()) {
-                        $test_file = $fileObject->getPathname();
-                        if (!in_array($test_file, $needed_files)) {
-                            @unlink($test_file);
-                            $del_files++;
-                        }
-                    }
+                $end_time = microtime(true);
+
+                // Delete not needed files
+                foreach (glob(Tools::ds($dir, 'v' . $version . '-rel-*'), GLOB_ONLYDIR) as $file)
+                    static::del_files($file, $needed_files, $version);
+
+                // Delete empty folders
+                foreach (glob(Tools::ds($dir, 'v' . $version . '-rel-*'), GLOB_ONLYDIR) as $folder)
+                    static::del_folders($folder, $version);
+
+                Log::write_log(Language::t("Total size database: %s", Tools::bytesToSize1024($total_size)), 3, $version);
+                if (count($download_files) > 0) {
+                    $average_speed = round($total_downloads / ($end_time - $start_time));
+                    Log::write_log(Language::t("Total downloaded: %s", Tools::bytesToSize1024($total_downloads)), 3, $version);
+                    Log::write_log(Language::t("Average speed: %s/s", Tools::bytesToSize1024($average_speed)), 3, $version);
                 }
-            }
-            if ($del_files > 0) {
-                Log::write_log(Language::t("Deleted files: %s", $del_files), 3, $version);
-            }
 
-            // Delete empty folders
-            $del_folders = 0;
-            foreach (glob(Tools::ds($dir, 'v' . $version . '-rel-*'), GLOB_ONLYDIR) as $list) {
-                foreach (new RecursiveDirectoryIterator($list) as $fileObject) {
-                    $test_folder = $fileObject->getPathname();
-                    if (count(glob(Tools::ds($test_folder, '*'))) === 0) {
-                        @rmdir($test_folder);
-                        $del_folders++;
-                    }
-                }
-                if (count(glob(Tools::ds($list, '*'))) === 0) {
-                    @rmdir($list);
-                    $del_folders++;
-                }
+                static::create_dir(Tools::ds(Config::get('web_dir'), $DIRECTORIES[$version]));
+                @file_put_contents($cur_update_ver, $new_content);
             }
-            if ($del_folders > 0) {
-                Log::write_log(Language::t("Deleted folders: %s", $del_folders), 3, $version);
-            }
-
-            Log::write_log(Language::t("Total size database: %s", Tools::bytesToSize1024($total_size)), 3, $version);
-            if (count($download_files) > 0) {
-                $average_speed = round($total_downloads / ($end_time - $start_time));
-                Log::write_log(Language::t("Total downloaded: %s", Tools::bytesToSize1024($total_downloads)), 3, $version);
-                Log::write_log(Language::t("Average speed: %s/s", Tools::bytesToSize1024($average_speed)), 3, $version);
-            }
-
-            $dir = Tools::ds(Config::get('web_dir'), $DIRECTORIES[$version]);
-            if (!file_exists($dir)) @mkdir($dir, 0755, true);
-            @file_put_contents($cur_update_ver, $new_content);
-            unlink($tmp_update_ver);
-            return array($total_size, $total_downloads, $average_speed);
         } else {
             Log::write_log(Language::t("Error while parsing update.ver from %s", $mirror), 3, $version);
-            unlink($tmp_update_ver);
-            return array(null, null, null);
         }
+        unlink($tmp_update_ver);
+        return array($total_size, $total_downloads, $average_speed);
     }
 
+    /**
+     * @param $Nuser
+     * @param $Npass
+     * @return false|string
+     */
     static public function exp_nod($Nuser, $Npass)
     {
         $NodProduct = "eav";
@@ -430,7 +325,7 @@ class Mirror
             ++$i;
         };
         $j = 0;
-        While ($j <= strlen($Nuser) - 1) {
+        while ($j <= strlen($Nuser) - 1) {
             $k = ord($Nuser[$j]);
             $hash .= $Cmap[($k >> 4)];
             $hash .= $Cmap2[($k & 15)];
@@ -476,5 +371,222 @@ class Mirror
             }
         }
         return date('d.m.y', hexdec($LicInfo['ExpirationDate']));
+    }
+
+    /**
+     * @param $dir
+     */
+    static protected function create_dir($dir)
+    {
+        if (!file_exists($dir)) @mkdir($dir, 0755, true);
+    }
+
+    /**
+     * @param $file
+     * @param $needed_files
+     * @param $version
+     */
+    static protected function del_files($file, $needed_files, $version)
+    {
+        $del_files = 0;
+        foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($file), RecursiveIteratorIterator::SELF_FIRST) as $fileObject) {
+            if (!$fileObject->isDir()) {
+                $test_file = $fileObject->getPathname();
+                if (!in_array($test_file, $needed_files)) {
+                    @unlink($test_file);
+                    $del_files++;
+                }
+            }
+        }
+        if ($del_files > 0) {
+            Log::write_log(Language::t("Deleted files: %s", $del_files), 3, $version);
+        }
+    }
+
+    /**
+     * @param $folder
+     * @param $version
+     */
+    static protected function del_folders($folder, $version)
+    {
+        $del_folders = 0;
+        foreach (new RecursiveDirectoryIterator($folder) as $fileObject) {
+            $test_folder = $fileObject->getPathname();
+            if (count(glob(Tools::ds($test_folder, '*'))) === 0) {
+                @rmdir($test_folder);
+                $del_folders++;
+            }
+        }
+        if (count(glob(Tools::ds($folder, '*'))) === 0) {
+            @rmdir($folder);
+            $del_folders++;
+        }
+        if ($del_folders > 0) {
+            Log::write_log(Language::t("Deleted folders: %s", $del_folders), 3, $version);
+        }
+    }
+
+    /**
+     * @param $download_files
+     * @param $mirror
+     * @param $dir
+     * @param $version
+     * @param $pair_key
+     */
+    static protected function multidownload($download_files, $mirror, $dir, $version, $pair_key)
+    {
+        global $total_downloads;
+        $test = false;
+        $file = array();
+        $treads = sizeof($download_files);
+        $master = curl_multi_init();
+        $options = array(
+            CURLOPT_USERPWD => "$pair_key[0]:$pair_key[1]",
+            CURLOPT_BINARYTRANSFER => true,
+            CURLOPT_CONNECTTIMEOUT => CONNECTTIMEOUT,
+            CURLOPT_HEADER => false,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 5
+        );
+        $handles = array();
+        for ($i = 0; $i < $treads; $i++) {
+            $ch = curl_init();
+            $handles[Tools::get_resource_id($ch)] = $mirror;
+            $res = dirname(Tools::ds($dir, $download_files[$i]));
+            if (!@file_exists($res)) @mkdir($res, 0755, true);
+            $url = "http://" . $mirror . $download_files[$i];
+            $file[$url] = fopen(Tools::ds($dir, $download_files[$i]), 'w');
+            $options[CURLOPT_URL] = $url;
+            $options[CURLOPT_FILE] = $file[$url];
+            curl_setopt_array($ch, $options);
+            curl_multi_add_handle($master, $ch);
+        }
+        do {
+            while (($execrun = curl_multi_exec($master, $running)) == CURLM_CALL_MULTI_PERFORM) ;
+            curl_multi_select($master);
+            if ($execrun != CURLM_OK) break;
+            while ($done = curl_multi_info_read($master)) {
+                $ch = $done['handle'];
+                $info = curl_getinfo($ch);
+                $host = $handles[Tools::get_resource_id($ch)];
+                if ($info['http_code'] == 200) {
+                    @fclose($file[$info['url']]);
+                    unset($file[$info['url']]);
+                    Log::write_log(
+                        Language::t("From %s downloaded %s [%s] [%s/s]", $host, basename($info['url']),
+                        Tools::bytesToSize1024($info['download_content_length']),
+                        Tools::bytesToSize1024($info['speed_download'])),
+                        3,
+                        $version
+                    );
+                    unset($handles[Tools::get_resource_id($ch)]);
+                    $total_downloads += $info['download_content_length'];
+                    $i++;
+                    if (isset($download_files[$i])) {
+                        $ch = curl_init();
+                        $res = dirname(Tools::ds($dir, $download_files[$i]));
+                        if (!@file_exists($res)) @mkdir($res, 0755, true);
+                        $url = "http://" . $mirror . $download_files[$i];
+                        $handles[Tools::get_resource_id($ch)] = $mirror;
+                        $file[$url] = @fopen(Tools::ds($dir, $download_files[$i]), 'w');
+                        $options[CURLOPT_URL] = $url;
+                        $options[CURLOPT_FILE] = $file[$url];
+                        curl_setopt_array($ch, $options);
+                        curl_multi_add_handle($master, $ch);
+                    }
+                } else {
+                    @fclose($file[$info['url']]);
+                    Log::write_log(
+                        Language::t("Error download url %s", $info['url']),
+                            3,
+                            $version
+                    );
+                    print_r($info);
+                    $parsed_url = parse_url($info['url']);
+                    if (!empty($GLOBALS['mirrors'])) {
+                        if ($host == array_shift(array_values($GLOBALS['mirrors']))) {
+                            list($mirror, ) = Mirror::check_mirror($version, $pair_key);
+                        }
+                        if ($mirror != null) {
+                            $ch = curl_init();
+                            $url = "http://" . $mirror . $parsed_url['path'];
+                            $handles[Tools::get_resource_id($ch)] = $mirror;
+                            $file[$url] = @fopen(Tools::ds($dir, $parsed_url['path']), 'w');
+                            $options[CURLOPT_URL] = $url;
+                            $options[CURLOPT_FILE] = $file[$url];
+                            curl_setopt_array($ch, $options);
+                            curl_multi_add_handle($master, $ch);
+
+                        } else $test = true;
+                    } else $test = true;
+                }
+                curl_multi_remove_handle($master, $done['handle']);
+                curl_close($done['handle']);
+            }
+        } while ($running);
+        curl_multi_close($master);
+        if ($test == true) {
+            Log::write_log(
+                Language::t("All mirrors is down!"),
+                    3,
+                    $version
+            );
+        }
+    }
+
+    /**
+     * @param $download_files
+     * @param $mirror
+     * @param $dir
+     * @param $version
+     * @param $pair_key
+     */
+    static protected function singledownload($download_files, $mirror, $dir, $version, $pair_key)
+    {
+        global $total_downloads;
+        foreach ($download_files as $file) {
+            $dest = Tools::ds($dir, $file);
+            $test = true;
+            while ($test) {
+                $time = microtime(true);
+                $header = Tools::download_file("http://$pair_key[0]:$pair_key[1]@$mirror$file", $dest);
+                if (is_array($header) and !empty($header[0]) and preg_match("/200/", $header[0])) {
+                    $test = false;
+                    $size = $header['Content-Length'];
+                    $total_downloads += $size;
+                    Log::write_log(Language::t("From %s downloaded %s [%s] [%s/s]", $mirror, basename($file),
+                        Tools::bytesToSize1024($header['Content-Length']),
+                        Tools::bytesToSize1024($header['Content-Length'] / (microtime(true) - $time))),
+                        3,
+                        $version
+                    );
+                    $total_downloads += $header['Content-Length'];
+                } else {
+                    list($mirror, ) = Mirror::check_mirror($version, $pair_key);
+                }
+                if ($mirror == null) $test = false;
+            }
+        }
+    }
+
+    /**
+     * @param $download_files
+     * @param $mirror
+     * @param $dir
+     * @param $version
+     * @param $pair_key
+     */
+    static protected function download($download_files, $mirror, $dir, $version, $pair_key)
+    {
+        switch (function_exists('curl_multi_init'))
+        {
+            case true:
+                static::multidownload($download_files, $mirror, $dir, $version, $pair_key);
+                break;
+            case false:
+            default:
+                static::singledownload($download_files, $mirror, $dir, $version, $pair_key);
+                break;
+        }
     }
 }

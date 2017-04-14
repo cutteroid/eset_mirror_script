@@ -1,14 +1,26 @@
 <?php
 
+/**
+ * Class SelfUpdate
+ */
 class SelfUpdate
 {
+    /**
+     * @var
+     */
     static private $list_to_update;
 
+    /**
+     * @return bool
+     */
     static public function is_need_to_update()
     {
         return !empty(self::$list_to_update);
     }
 
+    /**
+     * @return array
+     */
     static private function get_hashes_from_server()
     {
         $content = file_get_contents(sprintf("http://%s:%s/%s/%s", SELFUPDATE_SERVER, SELFUPDATE_PORT, SELFUPDATE_DIR, SELFUPDATE_FILE));
@@ -21,6 +33,10 @@ class SelfUpdate
         return $arr;
     }
 
+    /**
+     * @param string $directory
+     * @return array
+     */
     static private function get_hashes_from_local($directory = "./")
     {
         $hashes = array();
@@ -39,11 +55,17 @@ class SelfUpdate
         return $hashes;
     }
 
+    /**
+     * @return string
+     */
     static public function get_version_on_server()
     {
         return trim(file_get_contents(sprintf("http://%s:%s/%s/%s", SELFUPDATE_SERVER, SELFUPDATE_PORT, SELFUPDATE_DIR, SELFUPDATE_NEW_VERSION)));
     }
 
+    /**
+     *
+     */
     static public function start_to_update()
     {
         foreach (self::$list_to_update as $filename => $info) {
@@ -61,6 +83,9 @@ class SelfUpdate
         }
     }
 
+    /**
+     *
+     */
     static public function init()
     {
         $remote_hashes = self::get_hashes_from_server();

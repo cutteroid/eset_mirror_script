@@ -3,6 +3,15 @@
 - edit lines in nod32ms.conf
 - make executable update.php
 - run ./update.php
+# PHP modules
+- curl
+- iconv
+- mbstring
+- openssl
+- pcre
+- SimpleXML
+- sockets
+- zlib
 # Nginx simple configuration
 map $http_user_agent $dir {
 
@@ -18,21 +27,21 @@ server {
 
  listen 2221;
  
- server_name host;
+ server_name **[host]**;
  
 
- access_log /var/log/nginx/host-access.log;
+ access_log /var/log/nginx/**[host]**-access.log;
  
- error_log /var/log/nginx/host-error.log;
+ error_log /var/log/nginx/**[host]**-error.log;
  
  index index.php index.html index.htm;
  
- root <veb_dir from nod32ms.conf>;
+ root **[veb_dir from nod32ms.conf]**;
  
  
  location / {
  
-  root <veb_dir from nod32ms.conf>;
+  root **[veb_dir from nod32ms.conf]**;
   
  }
 

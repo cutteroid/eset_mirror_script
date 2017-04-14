@@ -1,8 +1,17 @@
 <?php
 
+/**
+ * Class Tools
+ */
 class Tools
 {
 
+    /**
+     * @param $source
+     * @param $dest
+     * @param int $buffer
+     * @return array|bool
+     */
     static public function download_file($source, $dest, $buffer = 1024)
     {
         ini_set('default_socket_timeout', CONNECTTIMEOUT);
@@ -22,11 +31,17 @@ class Tools
         } else return false;
     }
 
+    /**
+     * @return string
+     */
     static public function get_archive_extension()
     {
         return ".gz";
     }
 
+    /**
+     *
+     */
     static public function archive_file()
     {
         $log = self::ds(Config::get("log_dir"), LOG_FILE);
@@ -36,6 +51,10 @@ class Tools
         unlink($log);
     }
 
+    /**
+     * @param $source
+     * @param $dest
+     */
     static public function extract_file($source, $dest)
     {
         switch (PHP_OS) {
@@ -55,6 +74,11 @@ class Tools
         }
     }
 
+    /**
+     * @param $hostname
+     * @param int $port
+     * @return bool
+     */
     static public function ping($hostname, $port = 80)
     {
         if ($fs = @fsockopen($hostname, $port, $errno, $errstr, CONNECTTIMEOUT)) {
@@ -63,6 +87,11 @@ class Tools
         } else return false;
     }
 
+    /**
+     * @param $bytes
+     * @param int $precision
+     * @return string
+     */
     static public function bytesToSize1024($bytes, $precision = 2)
     {
         $unit = array('Bytes', 'KBytes', 'MBytes', 'GBytes', 'TBytes', 'PBytes', 'EBytes');
@@ -71,16 +100,28 @@ class Tools
             ) . ' ' . $unit[intval($i)];
     }
 
+    /**
+     * @param $secs
+     * @return false|string
+     */
     static public function secondsToHumanReadable($secs)
     {
         return ($secs > 60 * 60 * 24) ? gmdate("H:i:s", $secs) : gmdate("i:s", $secs);
     }
 
+    /**
+     * @return mixed
+     */
     static public function ds()
     {
         return preg_replace('/[\/\\\\]+/', DIRECTORY_SEPARATOR, implode('/', func_get_args()));
     }
 
+    /**
+     * @param $text
+     * @param $to_encoding
+     * @return mixed|string
+     */
     static public function conv($text, $to_encoding)
     {
         if (preg_match("/utf-8/i", $to_encoding)) return $text;
@@ -129,6 +170,10 @@ class Tools
         }
     }
 
+    /**
+     * @param $resource
+     * @return bool|mixed
+     */
     static public function get_resource_id($resource)
     {
         if (!is_resource($resource))

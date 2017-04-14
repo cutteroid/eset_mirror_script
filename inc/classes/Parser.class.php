@@ -1,8 +1,17 @@
 <?php
 
+/**
+ * Class Parser
+ */
 class Parser
 {
 
+    /**
+     * @param $handle
+     * @param $tag
+     * @param bool $pattern
+     * @return array
+     */
     static public function parse_line($handle, $tag, $pattern = false)
     {
         $arr = array();
@@ -14,11 +23,19 @@ class Parser
         return $arr;
     }
 
+    /**
+     * @param $file
+     * @return array
+     */
     static public function parse_keys($file)
     {
         return parser::parse_line(file_get_contents($file), false, "/(.+:.+)\n/");
     }
 
+    /**
+     * @param $str_line
+     * @param $filename
+     */
     static public function delete_parse_line_in_file($str_line, $filename)
     {
         $content = file($filename);
@@ -31,6 +48,12 @@ class Parser
         file_put_contents($filename, $content);
     }
 
+    /**
+     * @param $handle
+     * @param $template
+     * @param $logins
+     * @param $passwds
+     */
     static public function parse_template($handle, $template, &$logins, &$passwds)
     {
         if (preg_match_all("/$template/s", $handle, $result, PREG_PATTERN_ORDER)) {
@@ -43,6 +66,10 @@ class Parser
         }
     }
 
+    /**
+     * @param $http_response_header
+     * @return array
+     */
     static public function parse_header($http_response_header)
     {
         $header = array();

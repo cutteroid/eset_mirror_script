@@ -1,14 +1,26 @@
 <?php
 
+/**
+ * Class Log
+ */
 class Log
 {
+    /**
+     * @var array
+     */
     static private $log = array();
+    /**
+     * @var string
+     */
     static private $mailer_log = "";
 
+    /**
+     *
+     */
     static public function destruct()
     {
         if (!empty(self::$mailer_log) && Config::get('phpmailer_enable') == '1') {
-            $mailer = new PHPMailer();
+            $mailer = new PHPMailer;
             if (Config::get('phpmailer_smtp') == '1') {
                 $mailer->Host = Config::get('phpmailer_smtp_host');
                 $mailer->Port = Config::get('phpmailer_smtp_port');
@@ -40,6 +52,11 @@ class Log
         }
     }
 
+    /**
+     * @param $filename
+     * @param $text
+     * @param bool $is_log_dir
+     */
     static public function write_to_file($filename, $text, $is_log_dir = false)
     {
         $file_name = $is_log_dir ? $filename : Tools::ds(Config::get('log_dir'), $filename);
@@ -52,6 +69,11 @@ class Log
         clearstatcache();
     }
 
+    /**
+     * @param $str
+     * @param $ver
+     * @param int $level
+     */
     static public function informer($str, $ver, $level = 0)
     {
         Log::write_log($str, $level, $ver);
@@ -60,6 +82,13 @@ class Log
         }
     }
 
+    /**
+     * @param $text
+     * @param $level
+     * @param null $version
+     * @param bool $ignore_rotate
+     * @return null
+     */
     static public function write_log($text, $level, $version = null, $ignore_rotate = false)
     {
         if (empty($text)) return null;

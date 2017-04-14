@@ -1,13 +1,35 @@
 <?php
 
+/**
+ * Class Language
+ */
 class Language
 {
+    /**
+     * @var null
+     */
     static private $language = null;
+    /**
+     * @var
+     */
     static private $language_file;
+    /**
+     * @var
+     */
     static private $language_pack;
+    /**
+     * @var
+     */
     static private $default_language_pack;
+    /**
+     * @var
+     */
     static private $default_language_file;
 
+    /**
+     * @param $lang
+     * @return null|string
+     */
     static public function init($lang)
     {
         Language::$language = $lang;
@@ -30,6 +52,9 @@ class Language
         return null;
     }
 
+    /**
+     * @return string
+     */
     static public function t()
     {
         $text = func_get_arg(0);

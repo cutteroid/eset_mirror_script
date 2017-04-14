@@ -1,8 +1,17 @@
 <?php
 
+/**
+ * Class Config
+ */
 class Config
 {
+    /**
+     * @var
+     */
     static private $CONF;
+    /**
+     * @var array
+     */
     static private $DEFAULT_CONF = array(
         'allow_100cpu' => '1',
         'default_language' => 'en',
@@ -34,7 +43,7 @@ class Config
         'default_recursion_level' => '2',
         'default_errors_quantity' => '5',
         'phpmailer_enable' => '0',
-        'phpmailer_codepage' => 'UTF-8',
+        'phpmailer_codepage' => 'utf-8',
         'phpmailer_smtp' => '0',
         'phpmailer_smtp_host' => null,
         'phpmailer_smtp_port' => '25',
@@ -60,6 +69,9 @@ class Config
         'debug_html' => '0'
     );
 
+    /**
+     * @var array
+     */
     static private $LCID = array(
         'bgr' => 1026,
         'chs' => 2052,
@@ -93,6 +105,10 @@ class Config
         'ukr' => 1058
     );
 
+    /**
+     * @param $filename
+     * @return null|string
+     */
     static public function init($filename)
     {
         if (!file_exists($filename)) {
@@ -136,6 +152,10 @@ class Config
         return null;
     }
 
+    /**
+     * @param $nm
+     * @return null
+     */
     static function get($nm)
     {
         if (isset(self::$CONF[$nm])) {
@@ -145,6 +165,10 @@ class Config
         }
     }
 
+    /**
+     * @param $parameter
+     * @return mixed|null
+     */
     static public function get_default_config_parameter($parameter)
     {
         if (isset(self::$DEFAULT_CONF[$parameter])) {
@@ -154,11 +178,18 @@ class Config
         }
     }
 
+    /**
+     * @param $i
+     * @return int
+     */
     static public function upd_version_is_set($i)
     {
         return isset(self::$CONF['update_version' . strval($i)]) ? self::$CONF['update_version' . strval($i)] : 0;
     }
 
+    /**
+     * @return null
+     */
     static public function check_config()
     {
         if (array_search(PHP_OS, array("Darwin", "Linux", "FreeBSD", "OpenBSD", "WINNT")) === false) {

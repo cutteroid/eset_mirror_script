@@ -1,9 +1,18 @@
 <?php
 
+/**
+ * Class Nod32ms
+ */
 class Nod32ms
 {
+    /**
+     * @var
+     */
     static private $start_time;
 
+    /**
+     * Nod32ms constructor.
+     */
     public function __construct()
     {
         Nod32ms::$start_time = time();
@@ -11,6 +20,9 @@ class Nod32ms
         $this->run_script();
     }
 
+    /**
+     *
+     */
     public function __destruct()
     {
         Log::write_log(Language::t("Total working time: %s", Tools::secondsToHumanReadable(time() - Nod32ms::$start_time)), 0);
@@ -18,6 +30,11 @@ class Nod32ms
         Log::write_log(Language::t("Stop script."), 0);
     }
 
+    /**
+     * @param $ver
+     * @param bool $return_time_stamp
+     * @return mixed|null
+     */
     private function check_time_stamp($ver, $return_time_stamp = false)
     {
         $days = Config::get('icq_informer_days') * 24 * 60 * 60;
@@ -43,6 +60,9 @@ class Nod32ms
         return null;
     }
 
+    /**
+     * @param $ver
+     */
     private function fix_time_stamp($ver)
     {
         $fn = Tools::ds(Config::get('log_dir'), SUCCESSFUL_TIMESTAMP);
@@ -64,6 +84,10 @@ class Nod32ms
         }
     }
 
+    /**
+     * @param $ver
+     * @param $size
+     */
     private function set_datebase_size($ver, $size)
     {
         $fn = Tools::ds(Config::get('log_dir'), DATABASES_SIZE);
@@ -85,6 +109,9 @@ class Nod32ms
         }
     }
 
+    /**
+     * @return array|null
+     */
     private function get_datebases_size()
     {
         $fn = Tools::ds(Config::get('log_dir'), DATABASES_SIZE);
@@ -102,6 +129,10 @@ class Nod32ms
         return (!empty($sizes)) ? $sizes : null;
     }
 
+    /**
+     * @param string $directory
+     * @return array
+     */
     static private function get_all_patterns($directory = PATTERN)
     {
         $d = dir($directory);
@@ -118,6 +149,9 @@ class Nod32ms
         return $ar_patterns;
     }
 
+    /**
+     * @return array|null
+     */
     private function read_keys()
     {
         if (!file_exists(Tools::ds(Config::get('log_dir'), KEY_FILE_VALID))) {
@@ -150,11 +184,23 @@ class Nod32ms
         return null;
     }
 
+    /**
+     * @param $login
+     * @param $password
+     * @param $date
+     * @param string $keyfile
+     */
     static private function write_key($login, $password, $date, $keyfile = KEY_FILE_VALID)
     {
         Log::write_to_file($keyfile, "$login:$password:$date\r\n");
     }
 
+    /**
+     * @param $login
+     * @param $passwd
+     * @param $file
+     * @return bool
+     */
     static private function key_exists_in_file($login, $passwd, $file)
     {
         if (file_exists($file)) {
@@ -171,12 +217,20 @@ class Nod32ms
         return false;
     }
 
+    /**
+     * @param $url
+     * @return null
+     */
     static public function get_url_mime_type($url)
     {
         $header = @get_headers($url, 1);
         return isset($header['Content-Type']) ? $header['Content-Type'] : null;
     }
 
+    /**
+     * @param $search
+     * @return string
+     */
     static private function strip_tags_and_css($search)
     {
         $document = array(
@@ -212,6 +266,12 @@ class Nod32ms
         return trim(preg_replace($document, $replace, $search));
     }
 
+    /**
+     * @param $this_link
+     * @param $level
+     * @param $pattern
+     * @return bool
+     */
     private function parse_www_page($this_link, $level, $pattern)
     {
         static $found_key = false;
@@ -290,6 +350,9 @@ class Nod32ms
         return false;
     }
 
+    /**
+     * @return null
+     */
     private function find_keys()
     {
         if (Config::get('find_auto_enable') != 1) {
@@ -340,6 +403,9 @@ class Nod32ms
         }
     }
 
+    /**
+     * @param $time_run_script
+     */
     private function generate_html($time_run_script)
     {
         Log::write_log(Language::t("Generating html..."), 0);
@@ -438,6 +504,9 @@ class Nod32ms
         Log::write_to_file($file, Tools::conv($html_page, Config::get('html_codepage')), true);
     }
 
+    /**
+     *
+     */
     private function run_script()
     {
         $key = $this->read_keys();
