@@ -121,7 +121,8 @@ class Config
         if (preg_match_all("/(.+)=(.+)/", $file, $result, PREG_PATTERN_ORDER)) {
             for ($i = 0; $i < count($result[1]); $i++) {
                 if (strpos($result[1][$i], "#") !== false) continue;
-                if (strpos($result[2][$i], "#") !== false) $result[2][$i] = substr($result[2][$i], 0, strpos($result[2][$i], "#"));
+                if (strpos($result[2][$i], "#") !== false)
+                    $result[2][$i] = substr($result[2][$i], 0, strpos($result[2][$i], "#"));
                 if (trim($result[1][$i]) && (trim($result[2][$i]) || trim($result[2][$i]) == '0')) {
                     self::$CONF[trim($result[1][$i])] = trim($result[2][$i]);
                 }
@@ -154,15 +155,11 @@ class Config
 
     /**
      * @param $nm
-     * @return null
+     * @return mixed|null
      */
     static function get($nm)
     {
-        if (isset(self::$CONF[$nm])) {
-            return self::$CONF[$nm];
-        } else {
-            return null;
-        }
+        return (isset(self::$CONF[$nm]) ? self::$CONF[$nm] : null);
     }
 
     /**
@@ -188,7 +185,7 @@ class Config
     }
 
     /**
-     * @return null
+     * @return string|null
      */
     static public function check_config()
     {
