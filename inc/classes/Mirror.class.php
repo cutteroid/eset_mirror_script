@@ -5,6 +5,8 @@
  */
 class Mirror
 {
+    static public $total_downloads = 0;
+
     /**
      * @param $login
      * @param $passwd
@@ -178,7 +180,6 @@ class Mirror
         $old_files = array();
         $new_files = array();
         $total_size = 0;
-        $total_downloads = 0;
         $average_speed = 0;
         $download_files = array();
         $needed_files = array();
@@ -224,26 +225,29 @@ class Mirror
                 list($file, $size) = $array;
                 $dirfile = Tools::ds($dir, $file);
                 $needed_files[] = $dirfile;
-                if (file_exists($dirfile) and (@filesize($dirfile) != $size)) unlink($dirfile);
+                if (file_exists($dirfile) and (@filesize($dirfile) != $size)) {
+                    unlink($dirfile);
+                }
                 if (!file_exists($dirfile)) {
                     $results = preg_grep('/' . basename($file) . '$/', $old_files);
-var_dump($results);
                     if (!empty($results)) {
-                        $result = end($results);
-var_dump($result);
-var_dump($result);
-                        $res = dirname($dirfile);
-                        if (!file_exists($res)) mkdir($res, 0755, true);
-                        if (Config::get('create_hard_links')) {
-                            if (Config::get('create_hard_links') == 'link') {
-                                link($result, $dirfile);
-                            } elseif (Config::get('create_hard_links') == 'fsutil') {
-                                shell_exec(sprintf("fsutil hardlink create %s %s", $dirfile, $result));
-                            }
-                            Log::write_log(Language::t("Created hard link for %s", basename($file)), 3, $version);
-                        } else {
-                            copy($result, $dirfile);
-                            Log::write_log(Language::t("Copied file %s", basename($file)), 3, $version);
+                        foreach ($results as $result) {
+                           if (@filesize($result) == $size) {
+                              $res = dirname($dirfile);
+                              if (!file_exists($res)) mkdir($res, 0755, true);
+                              if (Config::get('create_hard_links')) {
+                                  if (Config::get('create_hard_links') == 'link') {
+                                      link($result, $dirfile);
+                                  } elseif (Config::get('create_hard_links') == 'fsutil') {
+                                      shell_exec(sprintf("fsutil hardlink create %s %s", $dirfile, $result));
+                                  }
+                                  Log::write_log(Language::t("Created hard link for %s", basename($file)), 3, $version);
+                              } else {
+                                  copy($result, $dirfile);
+                                  Log::write_log(Language::t("Copied file %s", basename($file)), 3, $version);
+                              }
+                              break;
+                           }
                         }
                     } else {
                         $download_files[] = $file;
@@ -252,8 +256,8 @@ var_dump($result);
             }
 
             // Download files
-            $start_time = microtime(true);
             if (!empty($download_files)) {
+                $start_time = microtime(true);
                 shuffle($download_files);
                 Log::write_log(Language::t("Downloading %d files", count($download_files)), 3, $version);
                 if (Tools::ping($mirror) != true) list($mirror, ) = Mirror::check_mirror($version, $pair_key);
@@ -276,8 +280,8 @@ var_dump($result);
 
                 Log::write_log(Language::t("Total size database: %s", Tools::bytesToSize1024($total_size)), 3, $version);
                 if (count($download_files) > 0) {
-                    $average_speed = round($total_downloads / ($end_time - $start_time));
-                    Log::write_log(Language::t("Total downloaded: %s", Tools::bytesToSize1024($total_downloads)), 3, $version);
+                    $average_speed = round(self::$total_downloads / ($end_time - $start_time));
+                    Log::write_log(Language::t("Total downloaded: %s", Tools::bytesToSize1024(self::$total_downloads)), 3, $version);
                     Log::write_log(Language::t("Average speed: %s/s", Tools::bytesToSize1024($average_speed)), 3, $version);
                 }
 
@@ -288,7 +292,7 @@ var_dump($result);
             Log::write_log(Language::t("Error while parsing update.ver from %s", $mirror), 3, $version);
         }
         unlink($tmp_update_ver);
-        return array($total_size, $total_downloads, $average_speed);
+        return array($total_size, self::$total_downloads, $average_speed);
     }
 
     /**
@@ -432,7 +436,6 @@ var_dump($result);
      */
     static protected function multidownload($download_files, $mirror, $dir, $version, $pair_key)
     {
-        global $total_downloads;
         $test = false;
         $file = array();
         $treads = sizeof($download_files);
@@ -477,7 +480,7 @@ var_dump($result);
                         $version
                     );
                     unset($handles[Tools::get_resource_id($ch)]);
-                    $total_downloads += $info['download_content_length'];
+                    self::$total_downloads += $info['download_content_length'];
                     $i++;
                     if (isset($download_files[$i])) {
                         $ch = curl_init();
@@ -540,7 +543,6 @@ var_dump($result);
      */
     static protected function singledownload($download_files, $mirror, $dir, $version, $pair_key)
     {
-        global $total_downloads;
         foreach ($download_files as $file) {
             $dest = Tools::ds($dir, $file);
             $test = true;
@@ -550,14 +552,14 @@ var_dump($result);
                 if (is_array($header) and !empty($header[0]) and preg_match("/200/", $header[0])) {
                     $test = false;
                     $size = $header['Content-Length'];
-                    $total_downloads += $size;
+                    self::$total_downloads += $size;
                     Log::write_log(Language::t("From %s downloaded %s [%s] [%s/s]", $mirror, basename($file),
                         Tools::bytesToSize1024($header['Content-Length']),
                         Tools::bytesToSize1024($header['Content-Length'] / (microtime(true) - $time))),
                         3,
                         $version
                     );
-                    $total_downloads += $header['Content-Length'];
+                    self::$total_downloads += $header['Content-Length'];
                 } else {
                     list($mirror, ) = Mirror::check_mirror($version, $pair_key);
                 }
