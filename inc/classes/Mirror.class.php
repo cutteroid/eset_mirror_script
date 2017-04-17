@@ -499,7 +499,6 @@ class Mirror
                             3,
                             $version
                     );
-                    print_r($info);
                     $parsed_url = parse_url($info['url']);
                     if (!empty($GLOBALS['mirrors'])) {
                         if ($host == array_shift(array_values($GLOBALS['mirrors']))) {
