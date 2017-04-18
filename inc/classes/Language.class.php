@@ -37,7 +37,11 @@ class Language
         Language::$default_language_file = Tools::ds(SELF, LANGPACKS_DIR, Config::get_default_config_parameter('default_language') . '.ini');
 
         if ($lang != 'en') {
-            return (!file_exists(Language::$language_file)) ? sprintf("Language file [%s.ini] does not exist!", $lang) : null;
+            if (!file_exists(Language::$language_file)) {
+                return sprintf("Language file [%s.ini] does not exist!", $lang);
+            }
+        } else {
+            return null;
         }
 
         $tmp = file(Language::$language_file);
