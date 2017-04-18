@@ -153,7 +153,7 @@ class Mirror
                     rename($arch, $unarch);
                 } else {
                     Tools::extract_file($arch, $tmp_path);
-                    #@unlink($arch);
+                    @unlink($arch);
                 }
                 $new_version = Mirror::get_DB_version($unarch);
                 $content = @file_get_contents($unarch);
@@ -161,7 +161,7 @@ class Mirror
                 if ((intval($new_version) >= intval($old_version)) and preg_match('/' . Config::get('update_version_filter') . '/', $content)) {
                     break;
                 } else {
-                    #@unlink($unarch);
+                    @unlink($unarch);
                 }
             }
             array_shift($GLOBALS['mirrors']);
