@@ -155,7 +155,7 @@ class Mirror
                     Tools::extract_file($arch, $tmp_path);
                     @unlink($arch);
                 }
-                $new_version = mirror::get_DB_version($unarch);
+                $new_version = Mirror::get_DB_version($unarch);
                 $content = @file_get_contents($unarch);
 
                 if ((intval($new_version) >= intval($old_version)) and preg_match('/' . Config::get('update_version_filter') . '/', $content)) {
