@@ -165,7 +165,7 @@ class Config
      */
     static function get($nm)
     {
-        return (isset(self::$CONF[$nm]) ? self::$CONF[$nm] : null);
+        return isset(self::$CONF[$nm]) ? self::$CONF[$nm] : null;
     }
 
     /**
@@ -174,7 +174,7 @@ class Config
      */
     static public function get_default_config_parameter($parameter)
     {
-        return (isset(self::$DEFAULT_CONF[$parameter]) ? self::$DEFAULT_CONF[$parameter] : null);
+        return isset(self::$DEFAULT_CONF[$parameter]) ? self::$DEFAULT_CONF[$parameter] : null;
     }
 
     /**

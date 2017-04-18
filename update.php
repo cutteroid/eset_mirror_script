@@ -8,8 +8,8 @@ foreach (glob(CLASSES."*.class.php") as $filename)
     include_once($filename);
 
 if (($err = Config::init(CONF_FILE)) || ($err = Language::init(Config::get('default_language'))) || ($err = Language::t(Config::check_config()))) {
- Log::write_log(Language::t($err), 0);
- exit;
+    Log::write_log(Language::t($err), 0);
+    exit;
 }
 
 if (Config::get('self_update') > 0) {

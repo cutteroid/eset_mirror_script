@@ -12,19 +12,19 @@ class Language
     /**
      * @var
      */
-    static private $language_file;
+    static private $language_file = null;
     /**
      * @var
      */
-    static private $language_pack;
+    static private $language_pack = array();
     /**
      * @var
      */
-    static private $default_language_pack;
+    static private $default_language_pack = array();
     /**
      * @var
      */
-    static private $default_language_file;
+    static private $default_language_file = null;
 
     /**
      * @param $lang
