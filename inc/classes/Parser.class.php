@@ -40,9 +40,8 @@ class Parser
     {
         $content = file($filename);
         for ($i = 0; $i < count($content); $i++) {
-            if (strpos($content[$i], $str_line) !== false) {
+            if (strpos($content[$i], $str_line) !== false)
                 unset($content[$i]);
-            }
         }
         $content = implode("", $content);
         file_put_contents($filename, $content);
@@ -73,6 +72,7 @@ class Parser
     static public function parse_header($http_response_header)
     {
         $header = array();
+
         foreach ($http_response_header as $line) {
             if (preg_match("/\:/", $line)) {
                 $parse = array_map("trim", explode(":", $line, 2));

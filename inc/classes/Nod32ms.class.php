@@ -40,15 +40,18 @@ class Nod32ms
         $days = Config::get('icq_informer_days') * 24 * 60 * 60;
         $fn = Tools::ds(Config::get('log_dir'), SUCCESSFUL_TIMESTAMP);
         $timestamps = array();
+
         if (file_exists($fn)) {
             $handle = file_get_contents($fn);
             $content = Parser::parse_line($handle, false, "/(.+:.+)\n/");
+
             if (isset($content) && count($content)) {
                 foreach ($content as $value) {
                     $result = explode(":", $value);
                     $timestamps[$result[0]] = $result[1];
                 }
             }
+
             if (isset($timestamps[$ver])) {
                 if ($timestamps[$ver] + $days < time()) {
                     return $timestamps[$ver];
@@ -67,9 +70,11 @@ class Nod32ms
     {
         $fn = Tools::ds(Config::get('log_dir'), SUCCESSFUL_TIMESTAMP);
         $timestamps = array();
+
         if (file_exists($fn)) {
             $handle = file_get_contents($fn);
-            $content = Parser::parse_line($handle, false, "/(.:.+)\n/");
+            $content = Parser::parse_line($handle, false, "/(.+:.+)\n/");
+
             if (isset($content) && count($content)) {
                 foreach ($content as $value) {
                     $result = explode(":", $value);
@@ -77,11 +82,12 @@ class Nod32ms
                 }
             }
         }
+
         $timestamps[$ver] = time();
         @unlink($fn);
-        foreach ($timestamps as $key => $name) {
+
+        foreach ($timestamps as $key => $name)
             Log::write_to_file(SUCCESSFUL_TIMESTAMP, "$key:$name\r\n");
-        }
     }
 
     /**
@@ -92,9 +98,11 @@ class Nod32ms
     {
         $fn = Tools::ds(Config::get('log_dir'), DATABASES_SIZE);
         $sizes = array();
+
         if (file_exists($fn)) {
             $handle = file_get_contents($fn);
             $content = Parser::parse_line($handle, false, "/(.+:.+)\n/");
+
             if (isset($content) && count($content)) {
                 foreach ($content as $value) {
                     $result = explode(":", $value);
@@ -102,11 +110,12 @@ class Nod32ms
                 }
             }
         }
+
         $sizes[$ver] = $size;
         @unlink($fn);
-        foreach ($sizes as $key => $name) {
+
+        foreach ($sizes as $key => $name)
             Log::write_to_file(DATABASES_SIZE, "$key:$name\r\n");
-        }
     }
 
     /**
@@ -116,9 +125,11 @@ class Nod32ms
     {
         $fn = Tools::ds(Config::get('log_dir'), DATABASES_SIZE);
         $sizes = array();
+
         if (file_exists($fn)) {
             $handle = file_get_contents($fn);
             $content = Parser::parse_line($handle, false, "/(.+:.+)\n/");
+
             if (isset($content) && count($content)) {
                 foreach ($content as $value) {
                     $result = explode(":", $value);
@@ -126,6 +137,7 @@ class Nod32ms
                 }
             }
         }
+
         return (!empty($sizes)) ? $sizes : null;
     }
 
@@ -137,14 +149,19 @@ class Nod32ms
     {
         $d = dir($directory);
         static $ar_patterns = array();
+
         while (false !== ($entry = $d->read())) {
-            if (($entry == '.') || ($entry == '..')) continue;
+            if (($entry == '.') || ($entry == '..'))
+                continue;
+
             if (is_dir(Tools::ds($directory, $entry))) {
                 static::get_all_patterns(Tools::ds($directory, $entry));
                 continue;
             }
+
             $ar_patterns[] = Tools::ds($directory, $entry);
         }
+
         $d->close();
         return $ar_patterns;
     }
@@ -158,28 +175,33 @@ class Nod32ms
             $h = fopen(Tools::ds(Config::get('log_dir'), KEY_FILE_VALID), 'w');
             fclose($h);
         }
+
         $keys = Parser::parse_keys(Tools::ds(Config::get('log_dir'), KEY_FILE_VALID));
+
         if (!isset($keys) || !count($keys)) {
             Log::write_log(Language::t("Keys file is empty!"), 4);
             return null;
         }
+
         foreach ($keys as $value) {
             $result = explode(":", $value);
             $ret = Mirror::test_key($result[0], $result[1]);
+
             if (is_bool($ret)) {
                 if ($ret) {
                     Log::write_log(Language::t("Use valid key [%s:%s] Expiration date %s", $result[0], $result[1], $result[2]), 4);
                     return $result;
                 } elseif (!$ret) {
                     Log::write_log(Language::t("Invalid key [%s:%s]", $result[0], $result[1]), 4);
-                    if (Config::get('remove_invalid_keys') == 1) {
+
+                    if (Config::get('remove_invalid_keys') == 1)
                         Parser::delete_parse_line_in_file($result[0] . ':' . $result[1], Tools::ds(Config::get('log_dir'), KEY_FILE_VALID));
-                    }
                 }
             } else {
                 Log::write_log(Language::t("Unhandled exception [%s]", $ret), 4);
             }
         }
+
         Log::write_log(Language::t("No working keys were found!"), 4);
         return null;
     }
@@ -205,15 +227,17 @@ class Nod32ms
     {
         if (file_exists($file)) {
             $keys = Parser::parse_keys($file);
+
             if (isset($keys) && count($keys)) {
                 foreach ($keys as $value) {
                     $result = explode(":", $value);
-                    if ($result[0] == $login && $result[1] == $passwd) {
+
+                    if ($result[0] == $login && $result[1] == $passwd)
                         return true;
-                    }
                 }
             }
         }
+
         return false;
     }
 
@@ -284,16 +308,24 @@ class Nod32ms
         $context = stream_context_create($options);
         $search = @file_get_contents($this_link, false, $context);
         $test = false;
-        if (empty($http_response_header)) $test = true;
+
+        if (empty($http_response_header))
+            $test = true;
+
         $header = Parser::parse_header($http_response_header);
-        if (strlen($search) == 0 or empty($header[0]) or empty($header['Content-Type']) or !preg_match("/200/", $header[0]) or !preg_match("/text/", $header['Content-Type'])) $test = true;
+
+        if (strlen($search) == 0 or empty($header[0]) or empty($header['Content-Type']) or !preg_match("/200/", $header[0]) or !preg_match("/text/", $header['Content-Type']))
+            $test = true;
+
         if ($test) {
             Log::write_log(Language::t("Link wasn't found [%s]", $this_link), 4);
             return false;
         }
+
         Log::write_log(Language::t("Link was found [%s]", $this_link), 4);
         $login = array();
         $passwd = array();
+
         if (Config::get('debug_html') == 1) {
             $path_info = pathinfo($this_link);
             $dir = Tools::ds(Config::get('log_dir'), DEBUG_DIR, $path_info['basename']);
@@ -302,23 +334,26 @@ class Nod32ms
             file_put_contents($filename, $this->strip_tags_and_css($search));
         }
 
-        foreach ($pattern as $key) {
+        foreach ($pattern as $key)
             Parser::parse_template($search, $key, $login, $passwd);
-        }
+
         if (count($login) > 0) {
             Log::write_log(Language::t("Found keys: %s", count($login)), 3);
+
             for ($b = 0; $b < count($login); $b++) {
                 if (preg_match("/script|googleuser/i", $passwd[$b]) and
                     $this->key_exists_in_file($login[$b], $passwd[$b], Tools::ds(Config::get('log_dir'), KEY_FILE_VALID))
-                ) {
+                )
                     continue;
-                }
+
                 $ret = Mirror::test_key($login[$b], $passwd[$b]);
+
                 if (is_bool($ret)) {
                     if ($ret) {
                         $date = Mirror::exp_nod($login[$b], $passwd[$b]);
                         Log::write_log(Language::t("Found valid key [%s:%s] Expiration date %s", $login[$b], $passwd[$b], $date), 4);
                         $this->write_key($login[$b], $passwd[$b], $date, KEY_FILE_VALID);
+
                         if (count(file(Tools::ds(Config::get('log_dir'), KEY_FILE_VALID))) >= Config::get('count_find_keys')) {
                             $found_key = true;
                             return true;
@@ -331,22 +366,31 @@ class Nod32ms
                 }
             }
         }
+
         if ($level > 1) {
             $links = array();
             preg_match_all('/href *= *"([^\s"]+)/', $search, $results);
+
             foreach ($results[1] as $result) {
                 str_replace('webcache.googleusercontent.com/search?q=cache:', '', $result);
+
                 if (!preg_match("/youtube.com|ocialcomments.org/", $result)) {
                     preg_match('/https?:\/\/(?(?!\&amp).)*/', $result, $res);
-                    if (!empty($res[0])) $links[] = $res[0];
+
+                    if (!empty($res[0]))
+                        $links[] = $res[0];
                 }
             }
             Log::write_log(Language::t("Found links: %s", count($links)), 3);
+
             foreach ($links as $url) {
                 $this->parse_www_page($url, $level - 1, $pattern);
-                if ($found_key) return true;
+
+                if ($found_key)
+                    return true;
             }
         }
+
         return false;
     }
 
@@ -355,51 +399,71 @@ class Nod32ms
      */
     private function find_keys()
     {
-        if (Config::get('find_auto_enable') != 1) {
+        if (Config::get('find_auto_enable') != 1)
             return null;
-        }
+
         if (Config::get('find_system') === null) {
             $patterns = $this->get_all_patterns();
             shuffle($patterns);
         } else {
             $patterns = array(PATTERN . Config::get('find_system') . '.pattern');
         }
+
         while ($elem = array_shift($patterns)) {
             $pattern_name = pathinfo($elem);
             Log::write_log(Language::t("Begining search at %s", $pattern_name['basename']), 4);
             $find = @file_get_contents($elem);
+
             if (!$find) {
                 Log::write_log(Language::t("File %s doesn't exist!", $pattern_name['basename']), 4);
                 continue;
             }
+
             $link = Parser::parse_line($find, "link");
             $pageindex = Parser::parse_line($find, "pageindex");
             $pattern = Parser::parse_line($find, "pattern");
             $page_qty = Parser::parse_line($find, "page_qty");
             $recursion_level = Parser::parse_line($find, "recursion_level");
+
             if (empty($link)) {
                 Log::write_log(Language::t("[link] doesn't set up in %s file!", $elem), 4);
                 continue;
             }
-            if (empty($pageindex)) $pageindex[] = Config::get('default_pageindex');
-            if (empty($pattern)) $pattern[] = Config::get('default_pattern');
-            if (empty($page_qty)) $page_qty[] = Config::get('default_page_qty');
-            if (empty($recursion_level)) $recursion_level[] = Config::get('default_recursion_level');
+
+            if (empty($pageindex))
+                $pageindex[] = Config::get('default_pageindex');
+
+            if (empty($pattern))
+                $pattern[] = Config::get('default_pattern');
+
+            if (empty($page_qty))
+                $page_qty[] = Config::get('default_page_qty');
+
+            if (empty($recursion_level))
+                $recursion_level[] = Config::get('default_recursion_level');
+
             $queries = explode(", ", Config::get('default_search_query'));
             $found = false;
+
             foreach ($queries as $query) {
                 $pages = substr_count($link[0], "#PAGE#") ? $page_qty[0] : 1;
+
                 for ($i = 0; $i < $pages; $i++) {
                     $this_link = str_replace("#QUERY#", str_replace(" ", "+", trim($query)), $link[0]);
                     $this_link = str_replace("#PAGE#", ($i * $pageindex[0]), $this_link);
+
                     if ($this->parse_www_page($this_link, $recursion_level[0], $pattern) == true) {
                         $found = true;
                         break;
                     };
                 }
-                if ($found) break;
+
+                if ($found)
+                    break;
             }
-            if ($found) break;
+
+            if ($found)
+                break;
         }
     }
 
@@ -411,12 +475,16 @@ class Nod32ms
         Log::write_log(Language::t("Generating html..."), 0);
         $total_size = $this->get_datebases_size();
         $key = null;
+
         if (file_exists(Tools::ds(Config::get('log_dir'), KEY_FILE_VALID))) {
             $keys = Parser::parse_keys(Tools::ds(Config::get('log_dir'), KEY_FILE_VALID));
-            if (is_array($keys)) $key = explode(":", $keys[0]);
+
+            if (is_array($keys))
+                $key = explode(":", $keys[0]);
         }
 
         $html_page = '';
+
         if (Config::get('generate_only_table') == '0') {
             $html_page .= '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">';
             $html_page .= '<html>';
@@ -441,6 +509,7 @@ class Nod32ms
         $html_page .= '</tr>';
 
         global $DIRECTORIES;
+
         foreach ($DIRECTORIES as $ver => $dir) {
             if (Config::upd_version_is_set($ver) == '1') {
                 $update_ver = Tools::ds(Config::get('web_dir'), $dir, 'update.ver');
@@ -500,7 +569,10 @@ class Nod32ms
         }
 
         $file = Tools::ds(Config::get('web_dir'), Config::get('filename_html'));
-        if (file_exists($file)) @unlink($file);
+
+        if (file_exists($file))
+            @unlink($file);
+
         Log::write_to_file($file, Tools::conv($html_page, Config::get('html_codepage')), true);
     }
 
@@ -510,9 +582,11 @@ class Nod32ms
     private function run_script()
     {
         $key = $this->read_keys();
+
         if ($key === null) {
             $this->find_keys();
             $key = $this->read_keys();
+
             if ($key === null) {
                 Log::write_log(Language::t("No working keys were found! The script has been stopped!"), 1);
                 return;
@@ -521,28 +595,34 @@ class Nod32ms
         Mirror::find_best_mirrors($key);
         $mirrors = array();
         global $DIRECTORIES;
+
         foreach ($DIRECTORIES as $version => $dir) {
             $tmp_path = Tools::ds(Config::get('web_dir'), TMP_PATH, $dir);
             $cur_update_ver = Tools::ds(Config::get('web_dir'), $dir, 'update.ver');
             $tmp_update_ver = Tools::ds($tmp_path, 'update.ver');
             $old_version = Mirror::get_DB_version($cur_update_ver);
+
             if (Config::upd_version_is_set($version) == '1') {
                 list($mirror, $new_version) = Mirror::check_mirror($version, $key);
+
                 if ($mirror !== null) {
                     if (intval($old_version) >= intval($new_version)) {
                         Log::informer(Language::t("Your database is relevant %s", $old_version), $version, 2);
                     } else {
                         Log::write_log(Language::t("The latest database %s was found on %s", $new_version, $mirror), 2, $version);
                         $mirrors[$version] = array('mirror' => $mirror, 'old' => $old_version, 'new' => $new_version);
+
                         if (empty($GLOBALS['TESTKEY_REAL_PATH_NOD'])) {
                             $content = @file_get_contents($tmp_update_ver);
                             preg_match('#/[\w-]+/\w+/eav\w+\.nup#i', $content, $matches);
+
                             if (!empty($matches))
                                 $GLOBALS['TESTKEY_REAL_PATH_NOD'] = trim($matches[0]);
                         }
                         if (empty($GLOBALS['TESTKEY_REAL_PATH_ESS'])) {
                             $content = @file_get_contents($tmp_update_ver);
                             preg_match('#/[\w-]+/\w+/ess\w+\.nup#i', $content, $matches);
+
                             if (!empty($matches))
                                 $GLOBALS['TESTKEY_REAL_PATH_ESS'] = trim($matches[0]);
                         }
@@ -552,19 +632,23 @@ class Nod32ms
                 }
             }
         }
+
         if (!empty($mirrors)) {
             $total_size = array();
             $total_downloads = array();
             $average_speed = array();
+
             foreach ($mirrors as $version => $mirror) {
                 list($size, $downloads, $speed) = Mirror::download_signature($version, $mirror['mirror'], $key);
                 $this->set_datebase_size($version, $size);
+
                 if (is_null($downloads)) {
                     Log::informer(Language::t("Your database has not been updated!"), $version, 1);
                 } else {
                     $total_size[$version] = $size;
                     $total_downloads[$version] = $downloads;
                     $average_speed[$version] = $speed;
+
                     if (empty($mirror['old'])) {
                         Log::informer(Language::t("Your database was successfully updated to %s", $mirror['new']), $version, 2);
                     } else {
@@ -573,12 +657,16 @@ class Nod32ms
                     $this->fix_time_stamp($version);
                 }
             }
+
             Log::write_log(Language::t("Total size for all databases: %s", Tools::bytesToSize1024(array_sum($total_size))), 3);
+
             if (array_sum($total_downloads) > 0)
                 Log::write_log(Language::t("Total downloaded for all databases: %s", Tools::bytesToSize1024(array_sum($total_downloads))), 3);
+
             if (array_sum($average_speed) > 0)
                 Log::write_log(Language::t("Average speed for all databases: %s/s", Tools::bytesToSize1024(array_sum($average_speed) / count($average_speed))), 3);
         }
+
         if (Config::get('generate_html') == '1')
             $this->generate_html(Nod32ms::$start_time);
     }

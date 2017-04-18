@@ -42,3 +42,8 @@ define('SELFUPDATE_DIR', "nod32ms");
 define('SELFUPDATE_FILE', "files.md5");
 define('SELFUPDATE_NEW_VERSION', "version.txt");
 define("CONNECTTIMEOUT", 5); # Seconds
+
+function __autoload($class)
+{
+    @include_once CLASSES.$class.".class.php";
+}

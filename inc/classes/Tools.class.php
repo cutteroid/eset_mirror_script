@@ -17,18 +17,27 @@ class Tools
         ini_set('default_socket_timeout', CONNECTTIMEOUT);
         $header = @get_headers($source, 1);
         ini_restore('default_socket_timeout');
+
         if (is_array($header)) {
             if (preg_match("/200/", $header[0])) {
                 $dir = dirname($dest);
-                if (!file_exists($dir)) @mkdir($dir, 0755, true);
+
+                if (!file_exists($dir))
+                    @mkdir($dir, 0755, true);
+
                 $in = fopen($source, 'rb', false);
                 $out = fopen($dest, "wb");
-                while ($chunk = fread($in, $buffer)) fwrite($out, $chunk, $buffer);
+
+                while ($chunk = fread($in, $buffer))
+                    fwrite($out, $chunk, $buffer);
+
                 fclose($in);
                 fclose($out);
             }
+
             return $header;
-        } else return false;
+        } else
+            return false;
     }
 
     /**
@@ -84,7 +93,8 @@ class Tools
         if ($fs = @fsockopen($hostname, $port, $errno, $errstr, CONNECTTIMEOUT)) {
             fclose($fs);
             return true;
-        } else return false;
+        } else
+            return false;
     }
 
     /**
@@ -124,20 +134,26 @@ class Tools
      */
     static public function conv($text, $to_encoding)
     {
-        if (preg_match("/utf-8/i", $to_encoding)) return $text;
-        elseif (function_exists('mb_convert_encoding')) return mb_convert_encoding($text, 'UTF-8', $to_encoding);
-        elseif (function_exists('iconv')) return iconv('UTF-8', $to_encoding, $text);
+        if (preg_match("/utf-8/i", $to_encoding))
+            return $text;
+        elseif (function_exists('mb_convert_encoding'))
+            return mb_convert_encoding($text, 'UTF-8', $to_encoding);
+        elseif (function_exists('iconv'))
+            return iconv('UTF-8', $to_encoding, $text);
         else {
             $conv = array();
+
             for ($x = 128; $x <= 143; $x++) {
                 $conv['u'][] = chr(209) . chr($x);
                 $conv['w'][] = chr($x + 112);
 
             }
+
             for ($x = 144; $x <= 191; $x++) {
                 $conv['u'][] = chr(208) . chr($x);
                 $conv['w'][] = chr($x + 48);
             }
+
             $conv['u'][] = chr(208) . chr(129);
             $conv['w'][] = chr(168);
             $conv['u'][] = chr(209) . chr(145);
@@ -162,11 +178,16 @@ class Tools
             $conv['w'][] = chr(185);
             $win = str_replace($conv['u'], $conv['w'], $text);
 
-            if (preg_match("/1251/i", $to_encoding)) return $win;
-            elseif (preg_match("/koi8/i", $to_encoding)) return convert_cyr_string($win, 'w', 'k');
-            elseif (preg_match("/866/i", $to_encoding)) return convert_cyr_string($win, 'w', 'a');
-            elseif (preg_match("/mac/i", $to_encoding)) return convert_cyr_string($win, 'w', 'm');
-            else return $text;
+            if (preg_match("/1251/i", $to_encoding))
+                return $win;
+            elseif (preg_match("/koi8/i", $to_encoding))
+                return convert_cyr_string($win, 'w', 'k');
+            elseif (preg_match("/866/i", $to_encoding))
+                return convert_cyr_string($win, 'w', 'a');
+            elseif (preg_match("/mac/i", $to_encoding))
+                return convert_cyr_string($win, 'w', 'm');
+            else
+                return $text;
         }
     }
 
@@ -176,8 +197,6 @@ class Tools
      */
     static public function get_resource_id($resource)
     {
-        if (!is_resource($resource))
-            return false;
-        return @end(explode('#', (string)$resource));
+        return (!is_resource($resource)) ? false : @end(explode('#', (string)$resource));
     }
 }
