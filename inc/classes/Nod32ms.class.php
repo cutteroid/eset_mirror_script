@@ -455,7 +455,7 @@ class Nod32ms
                     if ($this->parse_www_page($this_link, $recursion_level[0], $pattern) == true) {
                         $found = true;
                         break;
-                    };
+                    }
                 }
 
                 if ($found)
@@ -465,6 +465,8 @@ class Nod32ms
             if ($found)
                 break;
         }
+
+        return null;
     }
 
     /**
