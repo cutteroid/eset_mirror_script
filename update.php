@@ -7,13 +7,10 @@ require_once "inc/init.php";
 foreach (glob(CLASSES."*.class.php") as $filename)
     include_once($filename);
 
-if (($err = Config::init(CONF_FILE)) || ($err = Language::t(Config::check_config()))) {
+if (($err = Config::init(CONF_FILE)) || ($err = Language::init(Config::get('default_language'))) || ($err = Language::t(Config::check_config()))) {
  Log::write_log(Language::t($err), 0);
  exit;
 }
-
-if ($err = Language::init(Config::get('default_language')))
-    Log::write_log(Language::t($err), 0);
 
 if (Config::get('self_update') > 0) {
  if (Tools::ping(SELFUPDATE_SERVER, SELFUPDATE_PORT) === true) {
