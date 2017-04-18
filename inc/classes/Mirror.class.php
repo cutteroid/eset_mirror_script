@@ -213,7 +213,6 @@ class Mirror
         $download_files = array();
         $needed_files = array();
         preg_match_all('#\[\w+\][^\[]+#', $content, $matches);
-var_dump($content);
         if (!empty($matches)) {
             // Parse files from .ver file
             foreach ($matches[0] as $container) {
@@ -248,7 +247,6 @@ var_dump($content);
                         '/v\d+-' . Config::get('update_version_filter') . '/i')),
                     '/\.nup$/i'
             );
-var_dump($new_files);
 
             foreach ($iterator as $file)
                 $old_files[] = $file->getPathname();
@@ -257,7 +255,6 @@ var_dump($new_files);
                 list($file, $size) = $array;
                 $dirfile = Tools::ds($dir, $file);
                 $needed_files[] = $dirfile;
-var_dump($file);
 
                 if (file_exists($dirfile) and (@filesize($dirfile) != $size))
                     unlink($dirfile);
@@ -295,15 +292,11 @@ var_dump($file);
                                $download_files[] = $file;
                         }
                     } else {
-var_dump($dirfile);
-var_dump($file);
                         $download_files[] = $file;
                     }
                 }
             }
 
-var_dump($matches[0]);
-var_dump($download_files);
             // Download files
             if (!empty($download_files)) {
                 $start_time = microtime(true);
