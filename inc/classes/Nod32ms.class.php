@@ -21,7 +21,7 @@ class Nod32ms
     }
 
     /**
-     *
+     * Nod32ms destructor.
      */
     public function __destruct()
     {
@@ -537,16 +537,14 @@ class Nod32ms
                         if (empty($GLOBALS['TESTKEY_REAL_PATH_NOD'])) {
                             $content = @file_get_contents($tmp_update_ver);
                             preg_match('#/[\w-]+/\w+/eav\w+\.nup#i', $content, $matches);
-                            if (!empty($matches)) {
+                            if (!empty($matches))
                                 $GLOBALS['TESTKEY_REAL_PATH_NOD'] = trim($matches[0]);
-                            }
                         }
                         if (empty($GLOBALS['TESTKEY_REAL_PATH_ESS'])) {
                             $content = @file_get_contents($tmp_update_ver);
                             preg_match('#/[\w-]+/\w+/ess\w+\.nup#i', $content, $matches);
-                            if (!empty($matches)) {
+                            if (!empty($matches))
                                 $GLOBALS['TESTKEY_REAL_PATH_ESS'] = trim($matches[0]);
-                            }
                         }
                     }
                 } else {
@@ -576,15 +574,12 @@ class Nod32ms
                 }
             }
             Log::write_log(Language::t("Total size for all databases: %s", Tools::bytesToSize1024(array_sum($total_size))), 3);
-            if (array_sum($total_downloads) > 0) {
+            if (array_sum($total_downloads) > 0)
                 Log::write_log(Language::t("Total downloaded for all databases: %s", Tools::bytesToSize1024(array_sum($total_downloads))), 3);
-            }
-            if (array_sum($average_speed) > 0) {
+            if (array_sum($average_speed) > 0)
                 Log::write_log(Language::t("Average speed for all databases: %s/s", Tools::bytesToSize1024(array_sum($average_speed) / count($average_speed))), 3);
-            }
         }
-        if (Config::get('generate_html') == '1') {
+        if (Config::get('generate_html') == '1')
             $this->generate_html(Nod32ms::$start_time);
-        }
     }
 }
