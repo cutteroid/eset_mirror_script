@@ -211,7 +211,7 @@ class Mirror
         $download_files = array();
         $needed_files = array();
         preg_match_all('#\[\w+\][^\[]+#', $content, $matches);
-
+var_dump($content);
         if (!empty($matches)) {
             // Parse files from .ver file
             foreach ($matches[0] as $container) {
@@ -246,6 +246,7 @@ class Mirror
                         '/v\d+-' . Config::get('update_version_filter') . '/i')),
                     '/\.nup$/i'
             );
+var_dump($new_files);
 
             foreach ($iterator as $file)
                 $old_files[] = $file->getPathname();
@@ -268,27 +269,38 @@ class Mirror
                               if (!file_exists($res))
                                   mkdir($res, 0755, true);
 
-                              if (Config::get('create_hard_links')) {
-                                  if (Config::get('create_hard_links') == 'link') {
+                              switch (Config::get('create_hard_links'))
+                              {
+                                  case 'link':
                                       link($result, $dirfile);
-                                  } elseif (Config::get('create_hard_links') == 'fsutil') {
+                                      Log::write_log(Language::t("Created hard link for %s", basename($file)), 3, $version);
+                                      break;
+                                  case 'fsutil':
                                       shell_exec(sprintf("fsutil hardlink create %s %s", $dirfile, $result));
-                                  }
-                                  Log::write_log(Language::t("Created hard link for %s", basename($file)), 3, $version);
-                              } else {
-                                  copy($result, $dirfile);
-                                  Log::write_log(Language::t("Copied file %s", basename($file)), 3, $version);
+                                      Log::write_log(Language::t("Created hard link for %s", basename($file)), 3, $version);
+                                      break;
+                                  case 'copy':
+                                  default:
+                                      copy($result, $dirfile);
+                                      Log::write_log(Language::t("Copied file %s", basename($file)), 3, $version);
+                                      break;
                               }
+
                               break;
                            }
                            if (!array_search($file, $download_files))
                                $download_files[] = $file;
                         }
-                    } else
+                    } else {
+var_dump($dirfile);
+var_dump($file);
                         $download_files[] = $file;
+                    }
                 }
             }
 
+var_dump($matches[0]);
+var_dump($download_files);
             // Download files
             if (!empty($download_files)) {
                 $start_time = microtime(true);
