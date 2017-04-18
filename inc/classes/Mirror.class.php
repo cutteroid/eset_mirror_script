@@ -334,8 +334,9 @@ var_dump($download_files);
                     Log::write_log(Language::t("Average speed: %s/s", Tools::bytesToSize1024($average_speed)), 3, $version);
                 }
             }
-        } else
+        } else {
             Log::write_log(Language::t("Error while parsing update.ver from %s", $mirror), 3, $version);
+        }
         unlink($tmp_update_ver);
         return array($total_size, self::$total_downloads, $average_speed);
     }
