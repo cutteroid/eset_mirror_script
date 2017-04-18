@@ -1,6 +1,6 @@
 <?php
-error_reporting(E_ERROR);
-ini_set('display_errors', 0);
+#error_reporting(E_ERROR);
+ini_set('display_errors', 1);
 
 require_once "inc/init.php";
 
