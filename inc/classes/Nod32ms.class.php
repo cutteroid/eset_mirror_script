@@ -592,6 +592,7 @@ class Nod32ms
                 return;
             }
         }
+
         Mirror::find_best_mirrors($key);
         $mirrors = array();
         global $DIRECTORIES;
