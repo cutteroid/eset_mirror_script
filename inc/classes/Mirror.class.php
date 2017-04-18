@@ -146,21 +146,23 @@ class Mirror
         while (!empty($GLOBALS['mirrors'])) {
             $mirror_array_values = array_values($GLOBALS['mirrors']);
             $mirror = array_shift($mirror_array_values);
-            $header = Tools::download_file("http://" . $login . ':' . $password . "@$mirror/$dir/update.ver", $arch);
+            $header = Tools::download_file("http://$login:$password@$mirror/$dir/update.ver", $arch);
 
             if (is_array($header) and !empty($header[0]) and preg_match("/200/", $header[0])) {
                 if (preg_match("/text/", $header['Content-Type'])) {
                     rename($arch, $unarch);
                 } else {
-                    tools::extract_file($arch, $tmp_path);
+                    Tools::extract_file($arch, $tmp_path);
                     @unlink($arch);
                 }
                 $new_version = mirror::get_DB_version($unarch);
                 $content = @file_get_contents($unarch);
 
-                if ((intval($new_version) >= intval($old_version)) and preg_match('/' . Config::get('update_version_filter') . '/', $content))
+                if ((intval($new_version) >= intval($old_version)) and preg_match('/' . Config::get('update_version_filter') . '/', $content)) {
                     break;
-                else @unlink($unarch);
+                } else {
+                    @unlink($unarch);
+                }
             }
             array_shift($GLOBALS['mirrors']);
         }
