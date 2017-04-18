@@ -4,6 +4,9 @@ ini_set('display_errors', 0);
 
 require_once "inc/init.php";
 
+foreach (glob(CLASSES."*.class.php") as $filename)
+    include_once($filename);
+
 if (($err = Config::init(CONF_FILE)) || ($err = Language::t(Config::check_config()))) {
  Log::write_log(Language::t($err), 0);
  exit;
