@@ -174,11 +174,7 @@ class Config
      */
     static public function get_default_config_parameter($parameter)
     {
-        if (isset(self::$DEFAULT_CONF[$parameter])) {
-            return self::$DEFAULT_CONF[$parameter];
-        } else {
-            return null;
-        }
+        return (isset(self::$DEFAULT_CONF[$parameter]) ? self::$DEFAULT_CONF[$parameter] : null);
     }
 
     /**
@@ -187,7 +183,7 @@ class Config
      */
     static public function upd_version_is_set($i)
     {
-        return isset(self::$CONF['update_version' . strval($i)]) ? self::$CONF['update_version' . strval($i)] : 0;
+        return (isset(self::$CONF['update_version' . strval($i)]) ? self::$CONF['update_version' . strval($i)] : 0);
     }
 
     /**
