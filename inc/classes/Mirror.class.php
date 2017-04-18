@@ -255,6 +255,7 @@ var_dump($new_files);
                 list($file, $size) = $array;
                 $dirfile = Tools::ds($dir, $file);
                 $needed_files[] = $dirfile;
+var_dump($file);
 
                 if (file_exists($dirfile) and (@filesize($dirfile) != $size))
                     unlink($dirfile);
