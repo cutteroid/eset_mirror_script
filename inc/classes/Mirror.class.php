@@ -225,9 +225,8 @@ class Mirror
                 list($file, $size) = $array;
                 $dirfile = Tools::ds($dir, $file);
                 $needed_files[] = $dirfile;
-                if (file_exists($dirfile) and (@filesize($dirfile) != $size)) {
+                if (file_exists($dirfile) and (@filesize($dirfile) != $size))
                     unlink($dirfile);
-                }
                 if (!file_exists($dirfile)) {
                     $results = preg_grep('/' . basename($file) . '$/', $old_files);
                     if (!empty($results)) {
