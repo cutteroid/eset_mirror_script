@@ -220,23 +220,20 @@ class Mirror
             // Download files
             if (!empty($download_files)) {
                 static::dowload_files($version, $dir, $mirror, $pair_key, $download_files);
-
-                // Delete not needed files
-                foreach (glob(Tools::ds($dir, 'v' . $version . '-rel-*'), GLOB_ONLYDIR) as $file) {
-                    static::del_files($file, $needed_files, $version);
-                }
-
-                // Delete empty folders
-                foreach (glob(Tools::ds($dir, 'v' . $version . '-rel-*'), GLOB_ONLYDIR) as $folder) {
-                    static::del_folders($folder, $version);
-                }
-
-                static::create_dir(Tools::ds(Config::get('web_dir'), $DIRECTORIES[$version]));
-                @file_put_contents($cur_update_ver, $new_content);
-
-            } else {
-                    Log::write_log(Language::t("All mirrors is down!"), 3, $version);
             }
+
+            // Delete not needed files
+            foreach (glob(Tools::ds($dir, 'v' . $version . '-rel-*'), GLOB_ONLYDIR) as $file) {
+                static::del_files($file, $needed_files, $version);
+            }
+
+            // Delete empty folders
+            foreach (glob(Tools::ds($dir, 'v' . $version . '-rel-*'), GLOB_ONLYDIR) as $folder) {
+                static::del_folders($folder, $version);
+            }
+
+            static::create_dir(Tools::ds(Config::get('web_dir'), $DIRECTORIES[$version]));
+            @file_put_contents($cur_update_ver, $new_content);
 
             Log::write_log(Language::t("Total size database: %s", Tools::bytesToSize1024($total_size)), 3, $version);
 
@@ -245,7 +242,6 @@ class Mirror
                 Log::write_log(Language::t("Total downloaded: %s", Tools::bytesToSize1024(self::$total_downloads)), 3, $version);
                 Log::write_log(Language::t("Average speed: %s/s", Tools::bytesToSize1024($average_speed)), 3, $version);
             }
-            //}
         } else {
             Log::write_log(Language::t("Error while parsing update.ver from %s", $mirror), 3, $version);
         }
