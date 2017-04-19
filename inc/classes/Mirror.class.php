@@ -234,17 +234,17 @@ class Mirror
                 static::create_dir(Tools::ds(Config::get('web_dir'), $DIRECTORIES[$version]));
                 @file_put_contents($cur_update_ver, $new_content);
 
-                } else {
+            } else {
                     Log::write_log(Language::t("All mirrors is down!"), 3, $version);
-                }
+            }
 
-                Log::write_log(Language::t("Total size database: %s", Tools::bytesToSize1024($total_size)), 3, $version);
+            Log::write_log(Language::t("Total size database: %s", Tools::bytesToSize1024($total_size)), 3, $version);
 
-                if (count($download_files) > 0) {
-                    $average_speed = round(self::$total_downloads / (microtime(true) - $start_time));
-                    Log::write_log(Language::t("Total downloaded: %s", Tools::bytesToSize1024(self::$total_downloads)), 3, $version);
-                    Log::write_log(Language::t("Average speed: %s/s", Tools::bytesToSize1024($average_speed)), 3, $version);
-                }
+            if (count($download_files) > 0) {
+                $average_speed = round(self::$total_downloads / (microtime(true) - $start_time));
+                Log::write_log(Language::t("Total downloaded: %s", Tools::bytesToSize1024(self::$total_downloads)), 3, $version);
+                Log::write_log(Language::t("Average speed: %s/s", Tools::bytesToSize1024($average_speed)), 3, $version);
+            }
             //}
         } else {
             Log::write_log(Language::t("Error while parsing update.ver from %s", $mirror), 3, $version);
@@ -684,6 +684,9 @@ class Mirror
 
                             break;
                         }
+                    }
+                    if (!file_exists($dirfile) && !array_search($file, $download_files)) {
+                        $download_files[] = $file;
                     }
                 } else {
                     $download_files[] = $file;
