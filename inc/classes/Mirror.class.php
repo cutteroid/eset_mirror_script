@@ -205,10 +205,10 @@ class Mirror
         $cur_update_ver = Tools::ds($dir, $DIRECTORIES[$version], 'update.ver');
         $tmp_update_ver = Tools::ds($dir, TMP_PATH, $DIRECTORIES[$version], 'update.ver');
         $content = @file_get_contents($tmp_update_ver);
-        $total_size = 0;
-        $average_speed = 0;
         $start_time = microtime(true);
         preg_match_all('#\[\w+\][^\[]+#', $content, $matches);
+        $total_size = null;
+        $average_speed = null;
 
         if (!empty($matches)) {
             // Parse files from .ver file
