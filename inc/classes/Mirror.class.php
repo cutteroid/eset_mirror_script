@@ -205,122 +205,38 @@ class Mirror
         $cur_update_ver = Tools::ds($dir, $DIRECTORIES[$version], 'update.ver');
         $tmp_update_ver = Tools::ds($dir, TMP_PATH, $DIRECTORIES[$version], 'update.ver');
         $content = @file_get_contents($tmp_update_ver);
-        $new_content = '';
-        $old_files = array();
-        $new_files = array();
         $total_size = 0;
         $average_speed = 0;
-        $download_files = array();
-        $needed_files = array();
+        $start_time = microtime(true);
         preg_match_all('#\[\w+\][^\[]+#', $content, $matches);
+
         if (!empty($matches)) {
             // Parse files from .ver file
-            foreach ($matches[0] as $container) {
-                parse_str((str_replace("\r\n", "&", $container)), $output);
-
-                if (intval($version) != 10) {
-                    if (empty($output['file']) or empty($output['size']) or empty($output['date']) or
-                        (!empty($output['language']) and !in_array($output['language'], Config::get('update_version_lang'))) or
-                        (Config::get('update_version_x32') != 1 and preg_match("/32|86/", $output['platform'])) or
-                        (Config::get('update_version_x64') != 1 and preg_match("/64/", $output['platform'])) or
-                        (Config::get('update_version_ess') != 1 and preg_match("/ess/", $output['type']))
-                    )
-                        continue;
-                } else {
-                    if (empty($output['file']) or empty($output['size']) or
-                        (Config::get('update_version_x32') != 1 and preg_match("/32|86/", $output['platform'])) or
-                        (Config::get('update_version_x64') != 1 and preg_match("/64/", $output['platform']))
-                    )
-                        continue;
-                }
-
-                $new_files[] = array($output['file'], $output['size']);
-                $total_size += $output['size'];
-                $new_content .= $container;
-            }
+            list($new_files, $total_size, $new_content) = static::parse_update_file($version, $matches[0]);
 
             // Create hardlinks/copy file for empty needed files (name, size)
-            $iterator = new RegexIterator(
-                new RecursiveIteratorIterator(
-                    new RecursiveRegexIterator(
-                        new RecursiveDirectoryIterator($dir),
-                        '/v\d+-' . Config::get('update_version_filter') . '/i')),
-                    '/\.nup$/i'
-            );
-
-            foreach ($iterator as $file)
-                $old_files[] = $file->getPathname();
-
-            foreach ($new_files as $array) {
-                list($file, $size) = $array;
-                $dirfile = Tools::ds($dir, $file);
-                $needed_files[] = $dirfile;
-
-                if (file_exists($dirfile) and (@filesize($dirfile) != $size))
-                    unlink($dirfile);
-
-                if (!file_exists($dirfile)) {
-                    $results = preg_grep('/' . basename($file) . '$/', $old_files);
-
-                    if (!empty($results)) {
-                        foreach ($results as $result) {
-                           if (@filesize($result) == $size) {
-                              $res = dirname($dirfile);
-                              if (!file_exists($res))
-                                  mkdir($res, 0755, true);
-
-                              switch (Config::get('create_hard_links'))
-                              {
-                                  case 'link':
-                                      link($result, $dirfile);
-                                      Log::write_log(Language::t("Created hard link for %s", basename($file)), 3, $version);
-                                      break;
-                                  case 'fsutil':
-                                      shell_exec(sprintf("fsutil hardlink create %s %s", $dirfile, $result));
-                                      Log::write_log(Language::t("Created hard link for %s", basename($file)), 3, $version);
-                                      break;
-                                  case 'copy':
-                                  default:
-                                      copy($result, $dirfile);
-                                      Log::write_log(Language::t("Copied file %s", basename($file)), 3, $version);
-                                      break;
-                              }
-
-                              break;
-                           }
-                           if (!array_search($file, $download_files))
-                               $download_files[] = $file;
-                        }
-                    } else {
-                        $download_files[] = $file;
-                    }
-                }
-            }
+            list($download_files, $needed_files) = static::create_links($version, $dir, $new_files);
 
             // Download files
             if (!empty($download_files)) {
-                $start_time = microtime(true);
-                shuffle($download_files);
-                Log::write_log(Language::t("Downloading %d files", count($download_files)), 3, $version);
+                static::dowload_files($version, $dir, $mirror, $pair_key, $download_files);
 
-                if (Tools::ping($mirror) != true)
-                    list($mirror, ) = Mirror::check_mirror($version, $pair_key);
-
-                if ($mirror != null) {
-                    static::download($download_files, $mirror, $dir, $version, $pair_key);
                 // Delete not needed files
-                foreach (glob(Tools::ds($dir, 'v' . $version . '-rel-*'), GLOB_ONLYDIR) as $file)
+                foreach (glob(Tools::ds($dir, 'v' . $version . '-rel-*'), GLOB_ONLYDIR) as $file) {
                     static::del_files($file, $needed_files, $version);
+                }
 
                 // Delete empty folders
-                foreach (glob(Tools::ds($dir, 'v' . $version . '-rel-*'), GLOB_ONLYDIR) as $folder)
+                foreach (glob(Tools::ds($dir, 'v' . $version . '-rel-*'), GLOB_ONLYDIR) as $folder) {
                     static::del_folders($folder, $version);
+                }
 
                 static::create_dir(Tools::ds(Config::get('web_dir'), $DIRECTORIES[$version]));
                 @file_put_contents($cur_update_ver, $new_content);
 
-                } else
+                } else {
                     Log::write_log(Language::t("All mirrors is down!"), 3, $version);
+                }
 
                 Log::write_log(Language::t("Total size database: %s", Tools::bytesToSize1024($total_size)), 3, $version);
 
@@ -329,7 +245,7 @@ class Mirror
                     Log::write_log(Language::t("Total downloaded: %s", Tools::bytesToSize1024(self::$total_downloads)), 3, $version);
                     Log::write_log(Language::t("Average speed: %s/s", Tools::bytesToSize1024($average_speed)), 3, $version);
                 }
-            }
+            //}
         } else {
             Log::write_log(Language::t("Error while parsing update.ver from %s", $mirror), 3, $version);
         }
@@ -664,6 +580,136 @@ class Mirror
             default:
                 static::singledownload($download_files, $mirror, $dir, $version, $pair_key);
                 break;
+        }
+    }
+
+    /**
+     * @param $version
+     * @param $matches
+     * @return array
+     */
+    static protected function parse_update_file($version, $matches)
+    {
+        $new_content = '';
+        $new_files = array();
+        $total_size = 0;
+
+        foreach ($matches as $container) {
+            parse_str((str_replace("\r\n", "&", $container)), $output);
+
+            if (intval($version) != 10) {
+                if (empty($output['file']) or empty($output['size']) or empty($output['date']) or
+                    (!empty($output['language']) and !in_array($output['language'], Config::get('update_version_lang'))) or
+                    (Config::get('update_version_x32') != 1 and preg_match("/32|86/", $output['platform'])) or
+                    (Config::get('update_version_x64') != 1 and preg_match("/64/", $output['platform'])) or
+                    (Config::get('update_version_ess') != 1 and preg_match("/ess/", $output['type']))
+                )
+                    continue;
+            } else {
+                if (empty($output['file']) or empty($output['size']) or
+                    (Config::get('update_version_x32') != 1 and preg_match("/32|86/", $output['platform'])) or
+                    (Config::get('update_version_x64') != 1 and preg_match("/64/", $output['platform']))
+                )
+                    continue;
+            }
+
+            $new_files[] = array($output['file'], $output['size']);
+            $total_size += $output['size'];
+            $new_content .= $container;
+        }
+
+        return array($new_files, $total_size, $new_content);
+    }
+
+    /**
+     * @param $version
+     * @param $dir
+     * @param $new_files
+     * @return array
+     */
+    static protected function create_links($version, $dir, $new_files)
+    {
+        $old_files = array();
+        $needed_files = array();
+        $download_files = array();
+        $iterator = new RegexIterator(
+            new RecursiveIteratorIterator(
+                new RecursiveRegexIterator(
+                    new RecursiveDirectoryIterator($dir),
+                    '/v\d+-' . Config::get('update_version_filter') . '/i')),
+            '/\.nup$/i'
+        );
+
+        foreach ($iterator as $file) {
+            $old_files[] = $file->getPathname();
+        }
+
+        foreach ($new_files as $array) {
+            list($file, $size) = $array;
+            $dirfile = Tools::ds($dir, $file);
+            $needed_files[] = $dirfile;
+
+            if (file_exists($dirfile) and (@filesize($dirfile) != $size)) {
+                unlink($dirfile);
+            }
+
+            if (!file_exists($dirfile)) {
+                $results = preg_grep('/' . basename($file) . '$/', $old_files);
+
+                if (!empty($results)) {
+                    foreach ($results as $result) {
+                        if (@filesize($result) == $size) {
+                            $res = dirname($dirfile);
+
+                            if (!file_exists($res)) {
+                                mkdir($res, 0755, true);
+                            }
+
+                            switch (Config::get('create_hard_links'))
+                            {
+                                case 'link':
+                                    link($result, $dirfile);
+                                    Log::write_log(Language::t("Created hard link for %s", basename($file)), 3, $version);
+                                    break;
+                                case 'fsutil':
+                                    shell_exec(sprintf("fsutil hardlink create %s %s", $dirfile, $result));
+                                    Log::write_log(Language::t("Created hard link for %s", basename($file)), 3, $version);
+                                    break;
+                                case 'copy':
+                                default:
+                                    copy($result, $dirfile);
+                                    Log::write_log(Language::t("Copied file %s", basename($file)), 3, $version);
+                                    break;
+                            }
+
+                            break;
+                        }
+                    }
+                } else {
+                    $download_files[] = $file;
+                }
+            }
+        }
+        return array($download_files, $needed_files);
+    }
+
+    /**
+     * @param $version
+     * @param $dir
+     * @param $mirror
+     * @param $pair_key
+     * @param $download_files
+     */
+    static protected function dowload_files($version, $dir, $mirror, $pair_key, $download_files)
+    {
+        shuffle($download_files);
+        Log::write_log(Language::t("Downloading %d files", count($download_files)), 3, $version);
+
+        if (Tools::ping($mirror) != true)
+            list($mirror, ) = Mirror::check_mirror($version, $pair_key);
+
+        if ($mirror != null) {
+            static::download($download_files, $mirror, $dir, $version, $pair_key);
         }
     }
 }
