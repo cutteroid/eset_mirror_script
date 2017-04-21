@@ -214,10 +214,10 @@ class Config
 
                 switch (trim($result[2][0])) {
                     case "G":
-                        self::$CONF['log_rotate_size'] = self::$CONF['log_rotate_size'] * 1024;
+                        self::$CONF['log_rotate_size'] = self::$CONF['log_rotate_size'] * 1024 * 1024 * 1024;
                         break;
                     case "M":
-                        self::$CONF['log_rotate_size'] = self::$CONF['log_rotate_size'] * 1024;
+                        self::$CONF['log_rotate_size'] = self::$CONF['log_rotate_size'] * 1024 * 1024;
                         break;
                     case "K":
                         self::$CONF['log_rotate_size'] = self::$CONF['log_rotate_size'] * 1024;

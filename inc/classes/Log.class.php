@@ -115,12 +115,12 @@ class Log
                     array_pop(self::$log);
 
                     for ($i = Config::get('log_rotate_qty'); $i > 1; $i--) {
-                        @unlink($fn . "." . strval($i) . tools::get_archive_extension());
-                        @rename($fn . "." . strval($i - 1) . tools::get_archive_extension(), $fn . "." . strval($i) . tools::get_archive_extension());
+                        @unlink($fn . "." . strval($i) . Tools::get_archive_extension());
+                        @rename($fn . "." . strval($i - 1) . Tools::get_archive_extension(), $fn . "." . strval($i) . Tools::get_archive_extension());
                     }
 
-                    @unlink($fn . ".1" . tools::get_archive_extension());
-                    tools::archive_file();
+                    @unlink($fn . ".1" . Tools::get_archive_extension());
+                    Tools::archive_file();
                     @unlink($fn);
                     Log::write_log(Language::t("Log file was cutted due rotation..."), 0, null, true);
                     array_pop(self::$log);
