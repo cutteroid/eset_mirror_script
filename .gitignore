@@ -1,7 +1,8 @@
-log
 nod32ms.conf
 .idea
 changelog.eng
 changelog.rus
 files.md5
 version.txt
+/log/
+/nod32ms.conf
