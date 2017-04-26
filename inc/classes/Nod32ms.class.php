@@ -177,13 +177,17 @@ class Nod32ms
 
         if (is_bool($ret)) {
             if ($ret) {
-                Log::write_log(Language::t("Find valid key [%s:%s] Expiration date %s", $result[0], $result[1], $result[2]), 4);
+                $date = Mirror::exp_nod($result[0], $result[1]);
+                Log::write_log(Language::t("Found valid key [%s:%s] Expiration date %s", $result[0], $result[1], $date), 4);
+                $this->write_key($result[0], $result[1], $date, KEY_FILE_VALID);
                 return true;
             } else {
                 Log::write_log(Language::t("Invalid key [%s:%s]", $result[0], $result[1]), 4);
 
-                if (Config::get('remove_invalid_keys') == 1)
-                    Parser::delete_parse_line_in_file($result[0] . ':' . $result[1], Tools::ds(Config::get('log_dir'), KEY_FILE_VALID));
+                if (Config::get('remove_invalid_keys') == 1 &&
+                    $this->key_exists_in_file($result[0], $result[1], Tools::ds(Config::get('log_dir'), KEY_FILE_VALID))
+                )
+                    $this->delete_key($result[0], $result[1]);
             }
         } else {
             Log::write_log(Language::t("Unhandled exception [%s]", $ret), 4);
@@ -226,6 +230,15 @@ class Nod32ms
     static private function write_key($login, $password, $date, $keyfile = KEY_FILE_VALID)
     {
         Log::write_to_file($keyfile, "$login:$password:$date\r\n");
+    }
+
+    /**
+     * @param $login
+     * @param $password
+     */
+    static private function delete_key($login, $password)
+    {
+        Parser::delete_parse_line_in_file($login . ':' . $password, Tools::ds(Config::get('log_dir'), KEY_FILE_VALID));
     }
 
     /**
@@ -357,24 +370,11 @@ class Nod32ms
                 )
                     continue;
 
-                $ret = Mirror::test_key($login[$b], $passwd[$b]);
-
-                if (is_bool($ret)) {
-                    if ($ret) {
-                        $date = Mirror::exp_nod($login[$b], $passwd[$b]);
-                        Log::write_log(Language::t("Found valid key [%s:%s] Expiration date %s", $login[$b], $passwd[$b], $date), 4);
-                        $this->write_key($login[$b], $passwd[$b], $date, KEY_FILE_VALID);
-
-                        if (count(file(Tools::ds(Config::get('log_dir'), KEY_FILE_VALID))) >= Config::get('count_find_keys')) {
-                            $found_key = true;
-                            return true;
-                        }
-                    } elseif (!$ret) {
-                        Log::write_log(Language::t("Found invalid key [%s:%s]", $login[$b], $passwd[$b]), 4);
-                    }
-                } else {
-                    Log::write_log(Language::t("Unhandled exception [%s]", $ret), 4);
-                }
+                if ($this->validate_key($login[$b], $passwd[$b]) &&
+                    count(file(Tools::ds(Config::get('log_dir'), KEY_FILE_VALID))) >= Config::get('count_find_keys')
+                )
+                    $found_key = true;
+                    return true;
             }
         }
 
