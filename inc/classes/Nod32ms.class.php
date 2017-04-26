@@ -370,7 +370,7 @@ class Nod32ms
                 )
                     continue;
 
-                if ($this->validate_key($login[$b], $passwd[$b]) &&
+                if ($this->validate_key($login[$b].':'.$passwd[$b]) &&
                     count(file(Tools::ds(Config::get('log_dir'), KEY_FILE_VALID))) >= Config::get('count_find_keys')
                 )
                     $found_key = true;
