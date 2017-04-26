@@ -170,7 +170,7 @@ class Nod32ms
      * @param $key
      * @return bool
      */
-    static private function validate_key($key)
+    private function validate_key($key)
     {
         $result = explode(":", $key);
         $ret = Mirror::test_key($result[0], $result[1]);
