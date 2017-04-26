@@ -167,6 +167,31 @@ class Nod32ms
     }
 
     /**
+     * @param $key
+     * @return bool
+     */
+    static private function validate_key($key)
+    {
+        $result = explode(":", $key);
+        $ret = Mirror::test_key($result[0], $result[1]);
+
+        if (is_bool($ret)) {
+            if ($ret) {
+                Log::write_log(Language::t("Find valid key [%s:%s] Expiration date %s", $result[0], $result[1], $result[2]), 4);
+                return true;
+            } else {
+                Log::write_log(Language::t("Invalid key [%s:%s]", $result[0], $result[1]), 4);
+
+                if (Config::get('remove_invalid_keys') == 1)
+                    Parser::delete_parse_line_in_file($result[0] . ':' . $result[1], Tools::ds(Config::get('log_dir'), KEY_FILE_VALID));
+            }
+        } else {
+            Log::write_log(Language::t("Unhandled exception [%s]", $ret), 4);
+        }
+        return false;
+    }
+
+    /**
      * @return array|null
      */
     private function read_keys()
@@ -184,22 +209,8 @@ class Nod32ms
         }
 
         foreach ($keys as $value) {
-            $result = explode(":", $value);
-            $ret = Mirror::test_key($result[0], $result[1]);
-
-            if (is_bool($ret)) {
-                if ($ret) {
-                    Log::write_log(Language::t("Use valid key [%s:%s] Expiration date %s", $result[0], $result[1], $result[2]), 4);
-                    return $result;
-                } elseif (!$ret) {
-                    Log::write_log(Language::t("Invalid key [%s:%s]", $result[0], $result[1]), 4);
-
-                    if (Config::get('remove_invalid_keys') == 1)
-                        Parser::delete_parse_line_in_file($result[0] . ':' . $result[1], Tools::ds(Config::get('log_dir'), KEY_FILE_VALID));
-                }
-            } else {
-                Log::write_log(Language::t("Unhandled exception [%s]", $ret), 4);
-            }
+            if ($this->validate_key($value))
+                return explode(":", $value);
         }
 
         Log::write_log(Language::t("No working keys were found!"), 4);
