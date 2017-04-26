@@ -69,13 +69,10 @@ class Tools
         switch (PHP_OS) {
             case "Darwin":
             case "Linux":
-                system(sprintf("/usr/bin/unrar x -inul -y %s %s", $source, $dest));
-                break;
             case "FreeBSD":
-                system(sprintf("/usr/local/bin/unrar x -inul -y %s %s", $source, $dest));
-                break;
             case "OpenBSD":
-                system(sprintf("/usr/bin/unrar x -inul -y %s %s", $source, $dest));
+            default:
+                system(sprintf("`/usr/bin/which unrar` x -inul -y %s %s", $source, $dest));
                 break;
             case "WINNT":
                 shell_exec(sprintf(TOOLS . "unrar.exe e -y %s %s", $source, $dest));
