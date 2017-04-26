@@ -480,9 +480,7 @@ class Nod32ms
 
         if (file_exists(Tools::ds(Config::get('log_dir'), KEY_FILE_VALID))) {
             $keys = Parser::parse_keys(Tools::ds(Config::get('log_dir'), KEY_FILE_VALID));
-
-            if (is_array($keys))
-                $key = explode(":", $keys[0]);
+            $key = (is_array($keys)) ? explode(":", $keys[0]) : null;
         }
 
         $html_page = '';
@@ -551,25 +549,14 @@ class Nod32ms
             $html_page .= '<td colspan="2">' . Language::t("Used login") . '</td>';
             $html_page .= '<td colspan="2">' . $key[0] . '</td>';
             $html_page .= '</tr>';
-
             $html_page .= '<tr>';
             $html_page .= '<td colspan="2">' . Language::t("Used password") . '</td>';
             $html_page .= '<td colspan="2">' . $key[1] . '</td>';
             $html_page .= '</tr>';
-
-            if (isset($key[2])) {
-                $html_page .= '<tr>';
-                $html_page .= '<td colspan="2">' . Language::t("Expiration date") . '</td>';
-                $html_page .= '<td colspan="2">' . $key[2] . '</td>';
-                $html_page .= '</tr>';
-            }
+            $html_page .= (isset($key[2])) ? '<tr><td colspan="2">' . Language::t("Expiration date") . '</td><td colspan="2">' . $key[2] . '</td></tr>' : '';
         }
         $html_page .= '</table>';
-
-        if (Config::get('generate_only_table') == '0') {
-            $html_page .= '</td></tr></table></body></html>';
-        }
-
+        $html_page .= (Config::get('generate_only_table') == '0') ? '</td></tr></table></body></html>' : '';
         $file = Tools::ds(Config::get('web_dir'), Config::get('filename_html'));
 
         if (file_exists($file))
