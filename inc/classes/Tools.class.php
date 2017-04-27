@@ -66,7 +66,7 @@ class Tools
      */
     static public function extract_file($source, $dest)
     {
-        Log::write_log(Language::t("Extracting file %s to %s", $source, $dest), 1, $version);
+        Log::write_log(Language::t("Extracting file %s to %s", $source, $dest), 1);
         switch (PHP_OS) {
             case "Darwin":
             case "Linux":
