@@ -180,8 +180,7 @@ class Nod32ms
             if ($ret) {
                 $date = Mirror::exp_nod($result[0], $result[1]);
                 Log::write_log(Language::t("Found valid key [%s:%s] Expiration date %s", $result[0], $result[1], $date), 4);
-                if ($this->key_exists_in_file($result[0], $result[1], Tools::ds(Config::get('log_dir'), KEY_FILE_VALID)) == false)
-                    $this->write_key($result[0], $result[1], $date, KEY_FILE_VALID);
+                $this->write_key($result[0], $result[1], $date, KEY_FILE_VALID);
                 return true;
             } else {
                 Log::write_log(Language::t("Invalid key [%s:%s]", $result[0], $result[1]), 4);
@@ -490,13 +489,6 @@ class Nod32ms
     {
         Log::write_log(Language::t("Generating html..."), 0);
         $total_size = $this->get_datebases_size();
-        $key = null;
-
-        if (file_exists(Tools::ds(Config::get('log_dir'), KEY_FILE_VALID))) {
-            $keys = Parser::parse_keys(Tools::ds(Config::get('log_dir'), KEY_FILE_VALID));
-            $key = (is_array($keys)) ? explode(":", $keys[0]) : null;
-        }
-
         $html_page = '';
 
         if (Config::get('generate_only_table') == '0') {
@@ -559,6 +551,11 @@ class Nod32ms
         $html_page .= '</tr>';
 
         if ((Config::get('show_login_password')) and ($key !== null)) {
+            if (file_exists(Tools::ds(Config::get('log_dir'), KEY_FILE_VALID))) {
+                $keys = Parser::parse_keys(Tools::ds(Config::get('log_dir'), KEY_FILE_VALID));
+                $key = (is_array($keys)) ? explode(":", $keys[0]) : null;
+            }
+
             $html_page .= '<tr>';
             $html_page .= '<td colspan="2">' . Language::t("Used login") . '</td>';
             $html_page .= '<td colspan="2">' . $key[0] . '</td>';
