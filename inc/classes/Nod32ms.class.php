@@ -183,7 +183,7 @@ class Nod32ms
                 if ($this->key_exists_in_file($result[0], $result[1], Tools::ds(Config::get('log_dir'), KEY_FILE_VALID)) == false) {
                     $this->write_key($result[0], $result[1], $date, KEY_FILE_VALID);
                 } else {
-                    Log::write_log("Key [$login:$password:$date] already exists", 4);
+                    Log::write_log("Key [$result[0]:$result[1]:$date] already exists", 4);
                 }
                 return true;
             } else {
