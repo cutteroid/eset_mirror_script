@@ -554,7 +554,8 @@ class Nod32ms
         $html_page .= '<td colspan="2">' . ($time_run_script ? date("Y-m-d, H:i:s", $time_run_script) : Language::t("n/a")) . '</td>';
         $html_page .= '</tr>';
 
-        if ((Config::get('show_login_password')) and ($key !== null)) {
+        if (Config::get('show_login_password')) {
+            $key = null;
             if (file_exists(Tools::ds(Config::get('log_dir'), KEY_FILE_VALID))) {
                 $keys = Parser::parse_keys(Tools::ds(Config::get('log_dir'), KEY_FILE_VALID));
                 $key = (is_array($keys)) ? explode(":", $keys[0]) : null;
