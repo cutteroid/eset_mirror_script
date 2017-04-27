@@ -173,6 +173,7 @@ class Nod32ms
     private function validate_key($key)
     {
         $result = explode(":", $key);
+        Log::write_log(Language::t("Validating key [%s:%s]", $result[0], $result[1]), 4);
         $ret = Mirror::test_key($result[0], $result[1]);
 
         if (is_bool($ret)) {
@@ -229,7 +230,7 @@ class Nod32ms
      */
     static private function write_key($login, $password, $date, $keyfile = KEY_FILE_VALID)
     {
-        Log::write_to_file($keyfile, "$login:$password:$date\r\n");
+        static::key_exists_in_file($login, $password, $keyfile) ? Log::write_log("Key [$login:$password:$date] already exists", 4) : Log::write_to_file($keyfile, "$login:$password:$date\r\n");
     }
 
     /**
@@ -372,9 +373,10 @@ class Nod32ms
 
                 if ($this->validate_key($login[$b].':'.$passwd[$b]) &&
                     count(file(Tools::ds(Config::get('log_dir'), KEY_FILE_VALID))) >= Config::get('count_find_keys')
-                )
+                ) {
                     $found_key = true;
                     return true;
+                }
             }
         }
 
@@ -588,7 +590,8 @@ class Nod32ms
             $key = $this->read_keys();
 
             if ($key === null) {
-                Log::write_log(Language::t("No working keys were found! The script has been stopped!"), 1);
+                Log::write_log(Language::t("No working keys were found!"), 1);
+                Log::write_log(Language::t("The script has been stopped!"), 1);
                 return;
             }
         }
