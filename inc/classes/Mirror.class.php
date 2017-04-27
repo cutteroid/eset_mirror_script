@@ -16,6 +16,7 @@ class Mirror
     {
         $mirrors = Config::get('mirror');
         shuffle($mirrors);
+        Log::write_log(Language::t("Testing key [%s:%s]", $login, $passwd), 4);
 
         foreach ($mirrors as $mirror) {
             $tries = 0;
