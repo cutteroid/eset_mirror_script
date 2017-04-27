@@ -72,7 +72,6 @@ class Tools
             case "Linux":
             case "FreeBSD":
             case "OpenBSD":
-            default:
                 system(sprintf("`/usr/bin/which unrar` x -inul -y %s %s", $source, $dest));
                 break;
             case "WINNT":
