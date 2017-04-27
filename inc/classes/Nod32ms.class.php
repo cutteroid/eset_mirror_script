@@ -180,7 +180,8 @@ class Nod32ms
             if ($ret) {
                 $date = Mirror::exp_nod($result[0], $result[1]);
                 Log::write_log(Language::t("Found valid key [%s:%s] Expiration date %s", $result[0], $result[1], $date), 4);
-                $this->write_key($result[0], $result[1], $date, KEY_FILE_VALID);
+                if ($this->key_exists_in_file($result[0], $result[1], Tools::ds(Config::get('log_dir'), KEY_FILE_VALID)) == false)
+                    $this->write_key($result[0], $result[1], $date, KEY_FILE_VALID);
                 return true;
             } else {
                 Log::write_log(Language::t("Invalid key [%s:%s]", $result[0], $result[1]), 4);
