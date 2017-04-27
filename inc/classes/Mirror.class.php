@@ -158,7 +158,9 @@ class Mirror
                 $new_version = Mirror::get_DB_version($unarch);
                 $content = @file_get_contents($unarch);
 
-                if ((intval($new_version) >= intval($old_version)) and preg_match('/' . Config::get('update_version_filter') . '/', $content)) {
+                if ((intval($new_version) >= intval($old_version)) and
+                    preg_match('/' . Config::get('update_version_filter') . '/', $content)
+                ) {
                     break;
                 } else {
                     @unlink($unarch);
@@ -219,7 +221,7 @@ class Mirror
 
             // Download files
             if (!empty($download_files)) {
-                static::dowload_files($version, $dir, $mirror, $pair_key, $download_files);
+                static::download_files($version, $dir, $mirror, $pair_key, $download_files);
             }
 
             // Delete not needed files
@@ -699,7 +701,7 @@ class Mirror
      * @param $pair_key
      * @param $download_files
      */
-    static protected function dowload_files($version, $dir, $mirror, $pair_key, $download_files)
+    static protected function download_files($version, $dir, $mirror, $pair_key, $download_files)
     {
         shuffle($download_files);
         Log::write_log(Language::t("Downloading %d files", count($download_files)), 3, $version);
