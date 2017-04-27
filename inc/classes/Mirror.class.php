@@ -147,6 +147,7 @@ class Mirror
         while (!empty($GLOBALS['mirrors'])) {
             $mirror_array_values = array_values($GLOBALS['mirrors']);
             $mirror = array_shift($mirror_array_values);
+            Log::write_log(Language::t("Checking mirror $mirror with key [$login:$password]"), 1, $version);
             $header = Tools::download_file("http://$login:$password@$mirror/$dir/update.ver", $arch);
 
             if (is_array($header) and !empty($header[0]) and preg_match("/200/", $header[0])) {
