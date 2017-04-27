@@ -139,7 +139,7 @@ class Mirror
         $dir = $DIRECTORIES[$version];
         $cur_update_ver = Tools::ds(Config::get('web_dir'), $dir, 'update.ver');
         $tmp_path = Tools::ds(Config::get('web_dir'), TMP_PATH, $dir);
-        $old_version = Mirror::get_DB_version($cur_update_ver);
+        $old_version = static::get_DB_version($cur_update_ver);
         @mkdir($tmp_path, 0755, true);
         $arch = Tools::ds($tmp_path, 'update.rar');
         $unarch = Tools::ds($tmp_path, 'update.ver');
@@ -157,7 +157,7 @@ class Mirror
                     Tools::extract_file($arch, $tmp_path);
                     @unlink($arch);
                 }
-                $new_version = Mirror::get_DB_version($unarch);
+                $new_version = static::get_DB_version($unarch);
                 $content = @file_get_contents($unarch);
 
                 if ((intval($new_version) >= intval($old_version)) and
@@ -495,7 +495,7 @@ class Mirror
 
                     if (!empty($GLOBALS['mirrors'])) {
                         if ($host == array_shift(array_values($GLOBALS['mirrors'])))
-                            list($mirror, ) = Mirror::check_mirror($version, $pair_key);
+                            list($mirror, ) = static::check_mirror($version, $pair_key);
 
                         if ($mirror != null) {
                             $ch = curl_init();
@@ -553,7 +553,7 @@ class Mirror
                     );
                     static::$total_downloads += $header['Content-Length'];
                 } else {
-                    list($mirror, ) = Mirror::check_mirror($version, $pair_key);
+                    list($mirror, ) = static::check_mirror($version, $pair_key);
                 }
 
                 if ($mirror == null)
@@ -709,7 +709,7 @@ class Mirror
         Log::write_log(Language::t("Downloading %d files", count($download_files)), 3, $version);
 
         if (Tools::ping($mirror) != true)
-            list($mirror, ) = Mirror::check_mirror($version, $pair_key);
+            list($mirror, ) = static::check_mirror($version, $pair_key);
 
         if ($mirror != null) {
             static::download($download_files, $mirror, $dir, $version, $pair_key);
