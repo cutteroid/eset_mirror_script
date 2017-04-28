@@ -173,10 +173,20 @@ class Nod32ms
     private function validate_key($key)
     {
         $result = explode(":", $key);
+        $format = '%d.%m.%Y';
+        $current_date = strptime(strftime($format), $format);
         Log::write_log(Language::t("Validating key [%s:%s]", $result[0], $result[1]), 4);
         $date = $this->get_expire_date($result[0], $result[1]);
-        if ($date > )
-        $ret = Mirror::test_key($result[0], $result[1]);
+        $parsed_date = strptime($date, $format);
+        if (($parsed_date['tm_mday'] > $current_date['tm_mday']) &&
+            ($parsed_date['tm_mon'] > $current_date['tm_mon']) &&
+            ($parsed_date['tm_year'] > $current_date['tm_year'])
+        ) {
+            $ret = Mirror::test_key($result[0], $result[1]);
+        } else {
+            Log::write_log(Language::t("Found expired key [%s:%s] Expiration date %s", $result[0], $result[1], $date), 4);
+            return false;
+        }
 
         if (is_bool($ret)) {
             if ($ret) {
