@@ -326,7 +326,7 @@ class Mirror
 
         $LicInfo = array();
 
-        if ($response == 'unknownlic') return false;
+        if ($response == 'unknownlic\n') return false;
 
         if (function_exists('simplexml_load_string')) {
             $Rxml = simplexml_load_string($response);
