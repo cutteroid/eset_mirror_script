@@ -348,7 +348,6 @@ class Nod32ms
     private function parse_www_page($this_link, $level, $pattern)
     {
         static $found_key = false;
-        static $http_response_header;
         $options = array(
             'http' => array(
                 'method' => "GET",
