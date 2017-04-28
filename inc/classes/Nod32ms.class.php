@@ -229,7 +229,7 @@ class Nod32ms
      */
     private function write_key($login, $password, $date)
     {
-        ($this->key_exists_in_file($result[0], $result[1], Tools::ds(Config::get('log_dir'), KEY_FILE_VALID)) == false) ? Log::write_to_file(Tools::ds(Config::get('log_dir'), KEY_FILE_VALID), "$login:$password:$date\r\n") : Log::write_log(Language::t("Key [%s:%s:%s] already exists", $result[0], $result[1], $date), 4);
+        ($this->key_exists_in_file($login, $password, Tools::ds(Config::get('log_dir'), KEY_FILE_VALID)) == false) ? Log::write_to_file(Tools::ds(Config::get('log_dir'), KEY_FILE_VALID), "$login:$password:$date\r\n") : Log::write_log(Language::t("Key [%s:%s:%s] already exists", $login, $password, $date), 4);
     }
 
     /**
@@ -305,9 +305,9 @@ class Nod32ms
     }
 
     /**
-     * @param url $this_link
+     * @param string $this_link
      * @param integer $level
-     * @param parent $pattern
+     * @param array $pattern
      * @return bool
      */
     private function parse_www_page($this_link, $level, $pattern)
