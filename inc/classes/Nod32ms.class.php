@@ -174,11 +174,12 @@ class Nod32ms
     {
         $result = explode(":", $key);
         Log::write_log(Language::t("Validating key [%s:%s]", $result[0], $result[1]), 4);
+        $date = $this->get_expire_date($result[0], $result[1]);
+        if ($date > )
         $ret = Mirror::test_key($result[0], $result[1]);
 
         if (is_bool($ret)) {
             if ($ret) {
-                $date = Mirror::exp_nod($result[0], $result[1]);
                 Log::write_log(Language::t("Found valid key [%s:%s] Expiration date %s", $result[0], $result[1], $date), 4);
                 $this->write_key($result[0], $result[1], $date);
                 return true;
@@ -186,7 +187,7 @@ class Nod32ms
                 Log::write_log(Language::t("Invalid key [%s:%s]", $result[0], $result[1]), 4);
 
                 if (Config::get('remove_invalid_keys') == 1 &&
-                    $this->key_exists_in_file($result[0], $result[1], Tools::ds(Config::get('log_dir'), KEY_FILE_VALID))
+                    $this->key_exists_in_file($result[0], $result[1])
                 )
                     $this->delete_key($result[0], $result[1]);
             }
@@ -194,6 +195,16 @@ class Nod32ms
             Log::write_log(Language::t("Unhandled exception [%s]", $ret), 4);
         }
         return false;
+    }
+
+    /**
+     * @param $login
+     * @param $password
+     * @return false|string
+     */
+    private function get_expire_date($login, $password)
+    {
+        return Mirror::exp_nod($login, $password);
     }
 
     /**
@@ -229,7 +240,9 @@ class Nod32ms
      */
     private function write_key($login, $password, $date)
     {
-        ($this->key_exists_in_file($login, $password, Tools::ds(Config::get('log_dir'), KEY_FILE_VALID)) == false) ? Log::write_to_file(Tools::ds(Config::get('log_dir'), KEY_FILE_VALID), "$login:$password:$date\r\n") : Log::write_log(Language::t("Key [%s:%s:%s] already exists", $login, $password, $date), 4);
+        ($this->key_exists_in_file($login, $password) == false) ?
+            Log::write_to_file(Tools::ds(Config::get('log_dir'), KEY_FILE_VALID), "$login:$password:$date\r\n", true) :
+            Log::write_log(Language::t("Key [%s:%s:%s] already exists", $login, $password, $date), 4);
     }
 
     /**
@@ -244,13 +257,12 @@ class Nod32ms
     /**
      * @param string $login
      * @param string $password
-     * @param $file
      * @return bool
      */
-    private function key_exists_in_file($login, $password, $file)
+    private function key_exists_in_file($login, $password)
     {
-        if (file_exists($file)) {
-            $keys = Parser::parse_keys($file);
+        if (file_exists(Tools::ds(Config::get('log_dir'), KEY_FILE_VALID))) {
+            $keys = Parser::parse_keys(Tools::ds(Config::get('log_dir'), KEY_FILE_VALID));
 
             if (isset($keys) && count($keys)) {
                 foreach ($keys as $value) {
@@ -356,7 +368,7 @@ class Nod32ms
 
             for ($b = 0; $b < count($login); $b++) {
                 if (preg_match("/script|googleuser/i", $passwd[$b]) and
-                    $this->key_exists_in_file($login[$b], $passwd[$b], Tools::ds(Config::get('log_dir'), KEY_FILE_VALID))
+                    $this->key_exists_in_file($login[$b], $passwd[$b])
                 )
                     continue;
 
