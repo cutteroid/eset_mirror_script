@@ -177,6 +177,7 @@ class Nod32ms
         $current_date = strptime(strftime($format), $format);
         Log::write_log(Language::t("Validating key [%s:%s]", $result[0], $result[1]), 4);
         $date = $this->get_expire_date($result[0], $result[1]);
+
         if ($date == false) {
             Log::write_log(Language::t("Invalid key [%s:%s]", $result[0], $result[1]), 4);
             return false;
