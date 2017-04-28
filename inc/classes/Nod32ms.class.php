@@ -348,6 +348,7 @@ class Nod32ms
     private function parse_www_page($this_link, $level, $pattern)
     {
         static $found_key = false;
+        static $http_response_header;
         $options = array(
             'http' => array(
                 'method' => "GET",
@@ -358,13 +359,14 @@ class Nod32ms
         $search = @file_get_contents($this_link, false, $context);
         $test = false;
 
-        if (empty($http_response_header))
+        if (empty($http_response_header)) {
             $test = true;
+        } else {
+            $header = Parser::parse_header($http_response_header);
 
-        $header = Parser::parse_header($http_response_header);
-
-        if (strlen($search) == 0 or empty($header[0]) or empty($header['Content-Type']) or !preg_match("/200/", $header[0]) or !preg_match("/text/", $header['Content-Type']))
-            $test = true;
+            if (strlen($search) == 0 or empty($header[0]) or empty($header['Content-Type']) or !preg_match("/200/", $header[0]) or !preg_match("/text/", $header['Content-Type']))
+                $test = true;
+        }
 
         if ($test) {
             Log::write_log(Language::t("Link wasn't found [%s]", $this_link), 4);
@@ -480,7 +482,6 @@ class Nod32ms
                 $recursion_level[] = Config::get('default_recursion_level');
 
             $queries = explode(", ", Config::get('default_search_query'));
-            $found = false;
 
             foreach ($queries as $query) {
                 $pages = substr_count($link[0], "#PAGE#") ? $page_qty[0] : 1;
@@ -489,18 +490,10 @@ class Nod32ms
                     $this_link = str_replace("#QUERY#", str_replace(" ", "+", trim($query)), $link[0]);
                     $this_link = str_replace("#PAGE#", ($i * $pageindex[0]), $this_link);
 
-                    if ($this->parse_www_page($this_link, $recursion_level[0], $pattern) == true) {
-                        $found = true;
-                        break;
-                    }
+                    if ($this->parse_www_page($this_link, $recursion_level[0], $pattern) == true)
+                        break(3);
                 }
-
-                if ($found)
-                    break;
             }
-
-            if ($found)
-                break;
         }
 
         return null;
@@ -613,7 +606,6 @@ class Nod32ms
             $key = $this->read_keys();
 
             if ($key === null) {
-                Log::write_log(Language::t("No working keys were found!"), 1);
                 Log::write_log(Language::t("The script has been stopped!"), 1);
                 return;
             }
