@@ -180,11 +180,7 @@ class Nod32ms
             if ($ret) {
                 $date = Mirror::exp_nod($result[0], $result[1]);
                 Log::write_log(Language::t("Found valid key [%s:%s] Expiration date %s", $result[0], $result[1], $date), 4);
-                if ($this->key_exists_in_file($result[0], $result[1], Tools::ds(Config::get('log_dir'), KEY_FILE_VALID)) == false) {
-                    $this->write_key($result[0], $result[1], $date, KEY_FILE_VALID);
-                } else {
-                    Log::write_log(Language::t("Key [%s:%s:%s] already exists", $result[0], $result[1], $date), 4);
-                }
+                $this->write_key($result[0], $result[1], $date);
                 return true;
             } else {
                 Log::write_log(Language::t("Invalid key [%s:%s]", $result[0], $result[1]), 4);
@@ -230,11 +226,10 @@ class Nod32ms
      * @param string $login
      * @param string $password
      * @param string $date
-     * @param string $file
      */
-    private function write_key($login, $password, $date, $file = KEY_FILE_VALID)
+    private function write_key($login, $password, $date)
     {
-        Log::write_to_file($file, "$login:$password:$date\r\n");
+        ($this->key_exists_in_file($result[0], $result[1], Tools::ds(Config::get('log_dir'), KEY_FILE_VALID)) == false) ? Log::write_to_file(Tools::ds(Config::get('log_dir'), KEY_FILE_VALID), "$login:$password:$date\r\n") : Log::write_log(Language::t("Key [%s:%s:%s] already exists", $result[0], $result[1], $date), 4);
     }
 
     /**
