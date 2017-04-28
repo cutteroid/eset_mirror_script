@@ -241,7 +241,7 @@ class Nod32ms
      * @param string $login
      * @param string $password
      */
-    static private function delete_key($login, $password)
+    private function delete_key($login, $password)
     {
         Parser::delete_parse_line_in_file($login . ':' . $password, Tools::ds(Config::get('log_dir'), KEY_FILE_VALID));
     }
@@ -252,7 +252,7 @@ class Nod32ms
      * @param $file
      * @return bool
      */
-    static private function key_exists_in_file($login, $password, $file)
+    private function key_exists_in_file($login, $password, $file)
     {
         if (file_exists($file)) {
             $keys = Parser::parse_keys($file);
@@ -271,20 +271,10 @@ class Nod32ms
     }
 
     /**
-     * @param string $url
-     * @return string|null
-     */
-    static public function get_url_mime_type($url)
-    {
-        $header = @get_headers($url, 1);
-        return isset($header['Content-Type']) ? $header['Content-Type'] : null;
-    }
-
-    /**
      * @param string $search
      * @return string
      */
-    static private function strip_tags_and_css($search)
+    private function strip_tags_and_css($search)
     {
         $document = array(
             "'<script[^>]*?>.*?<\/script>'si",
