@@ -336,7 +336,7 @@ class Mirror
                 $LicInfo[(string)$ElemAttr->NAME] = (string)$ElemAttr->VALUE;
             }
         }
-        return date('d.m.y', hexdec($LicInfo['ExpirationDate']));
+        return date('d.m.Y', hexdec($LicInfo['ExpirationDate']));
     }
 
     /**
