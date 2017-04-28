@@ -178,9 +178,9 @@ class Nod32ms
         Log::write_log(Language::t("Validating key [%s:%s]", $result[0], $result[1]), 4);
         $date = $this->get_expire_date($result[0], $result[1]);
         $parsed_date = strptime($date, $format);
-        if (($parsed_date['tm_mday'] > $current_date['tm_mday']) &&
-            ($parsed_date['tm_mon'] > $current_date['tm_mon']) &&
-            ($parsed_date['tm_year'] > $current_date['tm_year'])
+        if (($parsed_date['tm_mday'] >= $current_date['tm_mday']) &&
+            ($parsed_date['tm_mon'] >= $current_date['tm_mon']) &&
+            ($parsed_date['tm_year'] >= $current_date['tm_year'])
         ) {
             $ret = Mirror::test_key($result[0], $result[1]);
         } else {
