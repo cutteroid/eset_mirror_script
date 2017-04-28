@@ -15,7 +15,7 @@ class Nod32ms
      */
     public function __construct()
     {
-        Nod32ms::$start_time = time();
+        static::$start_time = time();
         Log::write_log(Language::t("Run script %s", VERSION), 0);
         $this->run_script();
     }
@@ -25,7 +25,7 @@ class Nod32ms
      */
     public function __destruct()
     {
-        Log::write_log(Language::t("Total working time: %s", Tools::secondsToHumanReadable(time() - Nod32ms::$start_time)), 0);
+        Log::write_log(Language::t("Total working time: %s", Tools::secondsToHumanReadable(time() - static::$start_time)), 0);
         Log::destruct();
         Log::write_log(Language::t("Stop script."), 0);
     }
@@ -145,7 +145,7 @@ class Nod32ms
      * @param string $directory
      * @return array
      */
-    static private function get_all_patterns($directory = PATTERN)
+    private function get_all_patterns($directory = PATTERN)
     {
         $d = dir($directory);
         static $ar_patterns = array();
@@ -155,7 +155,7 @@ class Nod32ms
                 continue;
 
             if (is_dir(Tools::ds($directory, $entry))) {
-                static::get_all_patterns(Tools::ds($directory, $entry));
+                $this->get_all_patterns(Tools::ds($directory, $entry));
                 continue;
             }
 
@@ -227,19 +227,19 @@ class Nod32ms
     }
 
     /**
-     * @param $login
-     * @param $password
-     * @param $date
-     * @param string $keyfile
+     * @param string $login
+     * @param string $password
+     * @param string $date
+     * @param string $file
      */
-    private function write_key($login, $password, $date, $keyfile = KEY_FILE_VALID)
+    private function write_key($login, $password, $date, $file = KEY_FILE_VALID)
     {
-        Log::write_to_file($keyfile, "$login:$password:$date\r\n");
+        Log::write_to_file($file, "$login:$password:$date\r\n");
     }
 
     /**
-     * @param $login
-     * @param $password
+     * @param string $login
+     * @param string $password
      */
     static private function delete_key($login, $password)
     {
@@ -247,12 +247,12 @@ class Nod32ms
     }
 
     /**
-     * @param $login
-     * @param $passwd
+     * @param string $login
+     * @param string $password
      * @param $file
      * @return bool
      */
-    static private function key_exists_in_file($login, $passwd, $file)
+    static private function key_exists_in_file($login, $password, $file)
     {
         if (file_exists($file)) {
             $keys = Parser::parse_keys($file);
@@ -261,7 +261,7 @@ class Nod32ms
                 foreach ($keys as $value) {
                     $result = explode(":", $value);
 
-                    if ($result[0] == $login && $result[1] == $passwd)
+                    if ($result[0] == $login && $result[1] == $password)
                         return true;
                 }
             }
@@ -271,8 +271,8 @@ class Nod32ms
     }
 
     /**
-     * @param $url
-     * @return null
+     * @param string $url
+     * @return string|null
      */
     static public function get_url_mime_type($url)
     {
@@ -281,7 +281,7 @@ class Nod32ms
     }
 
     /**
-     * @param $search
+     * @param string $search
      * @return string
      */
     static private function strip_tags_and_css($search)
@@ -320,9 +320,9 @@ class Nod32ms
     }
 
     /**
-     * @param $this_link
-     * @param $level
-     * @param $pattern
+     * @param url $this_link
+     * @param integer $level
+     * @param parent $pattern
      * @return bool
      */
     private function parse_www_page($this_link, $level, $pattern)
@@ -487,9 +487,9 @@ class Nod32ms
     }
 
     /**
-     * @param $time_run_script
+     *
      */
-    private function generate_html($time_run_script)
+    private function generate_html()
     {
         Log::write_log(Language::t("Generating html..."), 0);
         $total_size = $this->get_datebases_size();
@@ -551,7 +551,7 @@ class Nod32ms
 
         $html_page .= '<tr>';
         $html_page .= '<td colspan="2">' . Language::t("Last execution of the script") . '</td>';
-        $html_page .= '<td colspan="2">' . ($time_run_script ? date("Y-m-d, H:i:s", $time_run_script) : Language::t("n/a")) . '</td>';
+        $html_page .= '<td colspan="2">' . (static::$start_time ? date("Y-m-d, H:i:s", static::$start_time) : Language::t("n/a")) . '</td>';
         $html_page .= '</tr>';
 
         if (Config::get('show_login_password')) {
@@ -675,6 +675,6 @@ class Nod32ms
         }
 
         if (Config::get('generate_html') == '1')
-            $this->generate_html(Nod32ms::$start_time);
+            $this->generate_html();
     }
 }
