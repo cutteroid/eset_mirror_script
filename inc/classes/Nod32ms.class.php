@@ -186,8 +186,8 @@ class Nod32ms
 
         if ((
                 ($parsed_date['tm_mday'] >= $current_date['tm_mday']) &&
-                ($parsed_date['tm_mon'] = $current_date['tm_mon']) &&
-                ($parsed_date['tm_year'] = $current_date['tm_year'])
+                ($parsed_date['tm_mon'] == $current_date['tm_mon']) &&
+                ($parsed_date['tm_year'] == $current_date['tm_year'])
             )
             ||
             (
