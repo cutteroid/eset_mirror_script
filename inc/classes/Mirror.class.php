@@ -162,10 +162,11 @@ class Mirror
 
                 if ((intval($new_version) >= intval($old_version)) and
                     preg_match('/' . Config::get('update_version_filter') . '/', $content)
-                )
+                ) {
                     break;
-
-                @unlink($unarch);
+                } else {
+                    @unlink($unarch);
+                }
             }
             array_shift($GLOBALS['mirrors']);
         }
