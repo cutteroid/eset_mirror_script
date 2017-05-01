@@ -72,7 +72,8 @@ class Tools
             case "Linux":
             case "FreeBSD":
             case "OpenBSD":
-                exec(sprintf("`which unrar` x -inul -y %s %s", $source, $dest));
+                $unrar = system("which unrar");
+                exec(sprintf("%s x -inul -y %s %s", $unrar, $source, $dest));
                 break;
             case "WINNT":
                 shell_exec(sprintf(TOOLS . "unrar.exe e -y %s %s", $source, $dest));
