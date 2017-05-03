@@ -72,8 +72,8 @@ class Tools
             case "Linux":
             case "FreeBSD":
             case "OpenBSD":
-                $unrar = system("which unrar");
-                exec(sprintf("%s x -inul -y %s %s", $unrar, $source, $dest));
+                putenv("PATH=".getenv("PATH").":/usr/local/bin:/usr/local/sbin:~/bin:~/sbin");
+                exec(sprintf("unrar x -inul -y %s %s", $source, $dest));
                 break;
             case "WINNT":
                 shell_exec(sprintf(TOOLS . "unrar.exe e -y %s %s", $source, $dest));
