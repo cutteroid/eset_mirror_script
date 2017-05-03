@@ -22,11 +22,11 @@ $SELFUPDATE_POSTFIX = array(
 define('DS', DIRECTORY_SEPARATOR);
 define('VERSION', '1.0.20170502 [Freedom for Ukraine][Moded by harmless]');
 define('SELF', substr(dirname(__FILE__), 0, -3));
-define('INC', substr(dirname(__FILE__), 0, -3) . "inc" . DS);
-define('CLASSES', substr(dirname(__FILE__), 0, -3) . "inc" . DS . "classes" . DS);
-define('PATTERN', substr(dirname(__FILE__), 0, -3) . "pattern" . DS);
-define('TOOLS', substr(dirname(__FILE__), 0, -3) . "tools" . DS);
-define('CONF_FILE', substr(dirname(__FILE__), 0, -3) . "nod32ms.conf");
+define('INC', SELF . "inc" . DS);
+define('CLASSES', SELF . "inc" . DS . "classes" . DS);
+define('PATTERN', SELF . "pattern" . DS);
+define('TOOLS', SELF . "tools" . DS);
+define('CONF_FILE', SELF . "nod32ms.conf");
 define('LANGPACKS_DIR', 'langpacks');
 define('DEBUG_DIR', 'debug');
 define('KEY_FILE_VALID', 'nod_keys.valid');
