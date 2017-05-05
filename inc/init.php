@@ -20,7 +20,7 @@ $SELFUPDATE_POSTFIX = array(
 );
 
 define('DS', DIRECTORY_SEPARATOR);
-define('VERSION', '1.0.20170502 [Freedom for Ukraine][Moded by harmless]');
+define('VERSION', '1.0.20170505 [Freedom for Ukraine][Moded by harmless]');
 define('SELF', substr(dirname(__FILE__), 0, -3) . DS);
 define('INC', SELF . "inc" . DS);
 define('CLASSES', INC . "classes" . DS);
