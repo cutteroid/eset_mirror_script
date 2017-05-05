@@ -174,7 +174,7 @@ class Nod32ms
     {
         $result = explode(":", $key);
         $format = '%d.%m.%Y';
-        $current_date = strptime(strftime($format), $format);
+        $current_date = date_parse_from_format($format, strftime($format));
         Log::write_log(Language::t("Validating key [%s:%s]", $result[0], $result[1]), 4);
         $date = $this->get_expire_date($result[0], $result[1]);
 
@@ -182,17 +182,17 @@ class Nod32ms
             Log::write_log(Language::t("Invalid key [%s:%s]", $result[0], $result[1]), 4);
             return false;
         }
-        $parsed_date = strptime($date, $format);
+        $parsed_date = date_parse_from_format($format, $date);
 
         if ((
-                ($parsed_date['tm_mday'] >= $current_date['tm_mday']) &&
-                ($parsed_date['tm_mon'] == $current_date['tm_mon']) &&
-                ($parsed_date['tm_year'] == $current_date['tm_year'])
+                ($parsed_date['day'] >= $current_date['day']) &&
+                ($parsed_date['month'] == $current_date['month']) &&
+                ($parsed_date['year'] == $current_date['year'])
             )
             ||
             (
-                ($parsed_date['tm_mon'] > $current_date['tm_mon']) &&
-                ($parsed_date['tm_year'] >= $current_date['tm_year'])
+                ($parsed_date['month'] > $current_date['month']) &&
+                ($parsed_date['year'] >= $current_date['year'])
             )
         ) {
             $ret = Mirror::test_key($result[0], $result[1]);
